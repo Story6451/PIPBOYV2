@@ -1,0 +1,2 @@
+# PIPBOY
+This is an Arduino-based pip boy device that will hopefully include a heart rate monitor, an array of sensors (temperature, pressure and clock), GPS and an FM radio receiver. Furthermore, it will have the ability to customise the user experience by allowing them to change the UI colour scheme from the colours seen in Fallout New Vegas and change various other settings. These settings are saved to a file in an sd card which is then loaded when the pip boy starts.
