@@ -4,6 +4,7 @@
 #include <Colours.h>
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
+#include <Graphics.h>
 
 TinyGPSPlus gps;
 
@@ -39,6 +40,8 @@ void GPSTab::Setup()
     oldYScreenPos = 0;
 
     timer = 0;
+
+    pTFT->drawBitmap(XOffset, YOffset, WorldMap3, MapWidth, MapHeight, pPIPDATA->ActiveColour);
 }
 
 void GPSTab::Loop()
@@ -50,12 +53,16 @@ void GPSTab::Loop()
         if (gps.charsProcessed() > 0)
         {
 
-            if (gps.satellites.isValid())
+            //if (gps.satellites.isValid())
+            {
                 satellites = gps.satellites.value();
+            }
             //GPSDelay(0);
 
-            if (gps.altitude.isValid())
+            //if (gps.altitude.isValid())
+            {
                 altitude = gps.altitude.meters();
+            }
             //GPSDelay(0);
 
             if (gps.location.isValid())
@@ -70,24 +77,15 @@ void GPSTab::Loop()
             {
                 correctedLat = maxLat;
                 if (latitude < 0)
+                {
                     correctedLat = -latitude;
-                
+                }
+
             }
 
-            //yPos = LatToScreenYPos(correctedLat);
-            xPos = LonToXPos(longitude);
-
             //calculate screen position
-            //xScreenPos = map(xPos, 0, 2 * PI, 0, 480);//480 needs to be changed to be the drawing box width
-            //yScreenPos = map(yPos, RadToMercRadians(maxLat * PI/180), 0, 0, 320);//320 needs to be changed to be the drawing box height
-            //yScreenPos = (yPos - RadToMercRadians(maxLat * (PI/180)))/(-RadToMercRadians(maxLat * PI/180)) * 320;
-            xScreenPos = xPos * ((480 - (2 * offset))/(2 * PI));
-
-            //yScreenPos = (320/2)-(320 * RadToMercRadians((correctedLat * PI/180)/(2 * PI)));
-            //xScreenPos = (longitude + 180) - (480/360);
-            
-            yScreenPos = LatToScreenYPos(correctedLat);
-            //xScreenPos = LonToXPos(longitude);
+            xScreenPos = LonToXPos(longitude);
+            yScreenPos = LatToYPos(correctedLat);
             OutputThroughSerial();
             TFTOutput();
         }
@@ -113,21 +111,20 @@ void GPSTab::GPSDelay(uint64_t diff)
     do
     {
         while(ss.available())
+        {   
             gps.encode(ss.read());
+        }
     } while ((millis() - start) < diff);
 }
 
 double GPSTab::RadToMercRadians(double latRad)
 {
-    //Serial.print("A1: "); Serial.print(latRad, 4); Serial.print(" ");
     double temp = tan((PI/4) + (latRad/2));
-    //Serial.print("A2: "); Serial.print(temp, 4); Serial.print(" ");
     if (temp == 0)
     {
         latRad = latRad + __DBL_EPSILON__;
         temp = tan((PI/4) + (latRad/2));
     }
-    //Serial.print("A3: "); Serial.print(log(temp), 4); Serial.print(" ");
     return log(temp);
 }
 
@@ -136,26 +133,25 @@ double GPSTab::MercRadToLat(double mercRad)
     return 2 * atan(exp(mercRad)) - PI/2;
 }
 
-double GPSTab::LatToScreenYPos(double lat)
+double GPSTab::LatToYPos(double lat)
 {
-    //return (RadToMercRadians(maxLat * PI/180) - RadToMercRadians(lat * PI/180)) * scalingFactor;
-    //return (RadToMercRadians(maxLat * PI/180) - RadToMercRadians(lat * PI/180));
-    //return (RadToMercRadians(maxLat * PI/180) - RadToMercRadians(lat * PI/180));// * scalingFactor;
-    return (239/2)-(239 * RadToMercRadians((lat * PI/180)/(2 * PI)));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
+    double mercRad = RadToMercRadians((lat * PI/180));
+    return (MapHeight/2)-(MapWidth * mercRad/(2 * PI));//259 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
 }
 
 double GPSTab::LonToXPos(double lon)
 {
-    //return ((longitude * PI/180) + PI) * scalingFactor;
-    return (longitude * PI/180) + PI;
-    //return (longitude + 180) - (480/360);
+    return (lon + 180) * (MapWidth/360); 
 }
 
 void GPSTab::OutputThroughSerial()
 {
     Serial.print("lat: "); Serial.print(latitude, 7); Serial.print(" ");
     Serial.print("long: "); Serial.print(longitude, 7); Serial.print(" ");
-    Serial.print("NoSatellites: "); Serial.print(satellites); Serial.println(" ");
+    Serial.print("ypos: "); Serial.print(yScreenPos); Serial.print(" ");
+    Serial.print("xpos: "); Serial.print(xScreenPos); Serial.print(" ");
+    Serial.print("Altitude: "); Serial.print(altitude); Serial.print(" ");
+    Serial.print("No.Satellites: "); Serial.print(satellites); Serial.println(" ");
     /*
     Serial.print("raw x: "); Serial.print(xPos, 7); Serial.print(" ");
     Serial.print("raw y: "); Serial.print(yPos, 7); Serial.print(" ");
@@ -167,13 +163,18 @@ void GPSTab::OutputThroughSerial()
 
 void GPSTab::TFTOutput()
 {
-    
-    pTFT->fillCircle(xScreenPos + offset, yScreenPos + offset, 2, pPIPDATA->ActiveColour);
     if ((oldXScreenPos != xScreenPos) || (oldYScreenPos != yScreenPos))
     {
-        pTFT->fillCircle(oldXScreenPos, oldYScreenPos, 2, BLACK);
+        pTFT->drawBitmap(XOffset, YOffset, WorldMap3, MapWidth, MapHeight, pPIPDATA->ActiveColour);
+
+        pTFT->fillCircle(oldXScreenPos + XOffset, oldYScreenPos + YOffset, 2, BLACK);
         oldXScreenPos = xScreenPos;
         oldYScreenPos = yScreenPos;
+    }
+    else
+    {
+
+        pTFT->fillCircle(xScreenPos + XOffset, yScreenPos + YOffset, 2, RED);
     }
     
     //pTFT->setTextSize(2);
@@ -189,22 +190,3 @@ void GPSTab::TFTOutput()
     pTFT->print("Satellites: "); pTFT->print(satellites); pTFT->print("   ");
 
 }
-/*
-latitude    = 41.145556; // (φ)
-longitude   = -73.995;   // (λ)
-
-mapWidth    = 200;
-mapHeight   = 100;
-
-// get x value
-x = (longitude+180)*(mapWidth/360)
-
-// convert from degrees to radians
-latRad = latitude*PI/180;
-
-// get y value
-mercN = ln(tan((PI/4)+(latRad/2)));
-y     = (mapHeight/2)-(mapHeight*mercN/(2*PI));
-*/
-
-//for zoomed in maps like map of uk values of pixel position need a multiplier so that it will be shifted the appropriate amoung based on the position of the pointer on the map

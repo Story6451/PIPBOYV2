@@ -9,6 +9,10 @@ class GPSTab : public Tab
 	const double scalingFactor = 1*pow(10, 6);
 	const double maxLatRad = 1.570796309;//89.999999(degrees) needs to be 1 more 9 than there are significant 0s
 	const double maxLat = 89.99999;
+	const uint16_t MapWidth = 415;
+	const uint16_t MapHeight = 239;
+	const uint16_t XOffset = 33;
+	const uint16_t YOffset = 61;
   	double latitude;
   	double longitude;
   	int8_t satellites;
@@ -26,7 +30,7 @@ class GPSTab : public Tab
 	int16_t yScreenPos;
 	int16_t oldXScreenPos;
 	int16_t oldYScreenPos;
-	const int16_t offset = 61;
+	const int16_t offset = 61; //distance from tabs
 	uint64_t timer;
 	
   public:
@@ -34,10 +38,15 @@ class GPSTab : public Tab
 	String ModuleName(){return "MAP";}
   	void Setup();
   	void Loop();
+	//reads gps data
 	void GPSDelay(uint64_t diff);
+	//convert radians to merc radians
 	double RadToMercRadians(double latRad);
+	//convert merc radians to latitude
 	double MercRadToLat(double mercRad);
-	double LatToScreenYPos(double lat);
+	//converts the latitude to an y coordinate for the screen
+	double LatToYPos(double lat);
+	//converts the latitude to an x coordinate for the screen
 	double LonToXPos(double lon);
 	void OutputThroughSerial();
 	void TFTOutput();
