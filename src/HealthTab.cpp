@@ -114,6 +114,8 @@ void HealthTab::Loop()
     //OutputThroughSerial();
     TFTOutput();
 
+    //comment out delay if serial output is active
+    delay(10);
 }
 
 float HealthTab::StandardDeviation(int32_t dataset[], int32_t SIZE)
