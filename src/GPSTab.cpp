@@ -136,7 +136,7 @@ double GPSTab::MercRadToLat(double mercRad)
 double GPSTab::LatToYPos(double lat)
 {
     double mercRad = RadToMercRadians((lat * PI/180));
-    return (MapHeight/2)-(MapWidth * mercRad/(2 * PI));//259 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
+    return (MapHeight/2)-(MapWidth * mercRad/(2 * PI));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
 }
 
 double GPSTab::LonToXPos(double lon)
