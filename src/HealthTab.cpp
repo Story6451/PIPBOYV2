@@ -3,19 +3,10 @@
 #include <SD.h>
 #include <Colours.h>
 #include <Graphics.h>
-#include <PeakDetector.h>
-
 
 #define heartPin A15
 
-//DFRobot_Heartrate heartSensor(ANALOG_MODE);
-PeakDetector pd;
-
-HealthTab::HealthTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
-{   
-    time1 = 0;
-    
-}
+HealthTab::HealthTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData){}
 
 void HealthTab::Setup()
 {
@@ -25,7 +16,7 @@ void HealthTab::Setup()
     stdDeviation = 0;
     time1 = 0;
     time2 = 0;
-    firstbeat = true;
+    rising = false;
     rawVal = 0;
     deltaTime = 0;
     bpm = 0;
@@ -43,14 +34,6 @@ void HealthTab::Setup()
         bpms[i] = 0;
     }
     
-    //fills buffer
-    /*
-    for (int i = 0; i < BUFFER_LENGTH - 1; i++)
-    {
-        values[i] = analogRead(heartPin);
-        delay(5);
-    }
-    */
     pTFT->drawBitmap(270, 100, StatBoy, 200, 200, pPIPDATA->ActiveColour);
 }
 
@@ -60,7 +43,7 @@ void HealthTab::Loop()
 {
     rawVal = analogRead(heartPin);
 
-    if (rawVal > 150)
+    if (rawVal > 150) //if fingure is on sensor
     {
         values[valuesArrayPosition] = rawVal;
         times[valuesArrayPosition] = millis();
@@ -86,114 +69,85 @@ void HealthTab::Loop()
             }
             
             avgRawVal = sumRawVal / BUFFER_LENGTH;
-            stdDeviation = sqrt(sumRawValSquared/BUFFER_LENGTH - (avgRawVal * avgRawVal));
-
         }
 
-        if ((rawVal - avgRawVal) > 0)   //then we have a peak
+        if ((rawVal - avgRawVal) > 0)   //we have a peak
         {
-            if (firstbeat == true)
+            if (rising == false)
             {
+                int32_t temp = time1;
                 time1 = millis();
+                time2 = temp;
+
             }
-            else
-            {
-                time2 = millis();
-            }
-            firstbeat = !firstbeat;
+            rising = true;
 
             deltaTime = abs(time1 - time2);
 
             bpm = 60000/deltaTime;
-            bpms[bpmArrayPosition] = bpm;
-            
-            if (bpmArrayPosition == BUFFER_LENGTH - 1)
+
+            if (bpm < 300)
             {
-                bpmArrayPosition = 0;
+                float stdev = StandardDeviation(bpms, BUFFER_LENGTH);
+                float mean = Mean(bpms, BUFFER_LENGTH);
+
+                bpms[bpmArrayPosition] = bpm;
+                
+                if (bpmArrayPosition == BUFFER_LENGTH - 1)
+                {
+                    bpmArrayPosition = 0;
+                }
+                else
+                {
+                    bpmArrayPosition++;
+                }
+                
+                meanBpm = mean;
             }
-            else
-            {
-                bpmArrayPosition++;
-            }
-            
-            int32_t sumOfBpms = 0;
-            for(int i = 0; i < BUFFER_LENGTH; i++)
-            {
-                sumOfBpms += bpms[i];
-            }
-            meanBpm = sumOfBpms / BUFFER_LENGTH;
         }
-    }
-
-    /*
-    if (rawVal > 150)
-    {
-        values[arrayPosition] = rawVal; //add data to array
-        times[arrayPosition] = millis();
-
-        if(arrayPosition == BUFFER_LENGTH - 1) 
-        {
-            arrayPosition = 0;
-        }       
         else
         {
-            arrayPosition++;
+            rising = false;
         }
-
-        bool peak = pd.addValue(values[arrayPosition]);
-        if (peak)
-        {
-            Serial.println("peak");
-            time2 = millis();
-            delta = time2 - time1;
-            time1 = time2;
-            peak = rawVal;
-            beat = true;
-        }
-
-        if ((delta < 2500) && (delta > 250))
-        {
-            deltas[arrayPosition] = delta;
-        }
-
-        int32_t deltaSum = 0;
-        for (int i = 0; i < BUFFER_LENGTH -1; i++)
-        {
-            deltaSum += deltas[i];
-        }
-        meanDelta = deltaSum/BUFFER_LENGTH;
-        bpm = 60000/meanDelta;
-
-        bpms[arrayPosition] = bpm;
-
-        int32_t bpmsum = 0;
-        for (int i = 0; i < BUFFER_LENGTH -1; i++)
-        {
-            bpmsum += bpms[i];
-        }
-        meanBpm = bpmsum/BUFFER_LENGTH;
-
     }
-    else
-    {
-        rawVal = 10;
-        meanBpm = 0;
-        bpm = 0;
-    }
-    */
+
     OutputThroughSerial();
     TFTOutput();
 
 }
 
-int32_t HealthTab::StandardDeviation(int32_t dataSet[], int32_t SIZE){}
+float HealthTab::StandardDeviation(int32_t dataset[], int32_t SIZE)
+{
+    int64_t sum = 0;
+    int64_t sumSquared = 0;
+    for(int i = 0; i < SIZE; i++)
+    {
+        sum += dataset[i];
+        sumSquared += dataset[i] * dataset[i];
+    }
+
+    float mean = sum / SIZE;
+
+    return sqrtf((sumSquared/SIZE) - (mean * mean));
+}
+
+float HealthTab::Mean(int32_t dataset[], int32_t SIZE)
+{
+    int64_t sum = 0;
+
+    for(int i = 0; i < SIZE; i++)
+    {
+        sum += dataset[i];
+    }
+
+    return sum / SIZE;
+}
 
 void HealthTab::OutputThroughSerial()
 {
     Serial.print(" Analog value: "); Serial.print(rawVal);
     Serial.print(" Mean value: "); Serial.print(avgRawVal);
-    Serial.print(" Delta raw values: "); Serial.print(rawVal - avgRawVal);
-    Serial.print(" std dev value: "); Serial.print(stdDeviation);
+    Serial.print(" Delta raw values: "); Serial.print(abs(rawVal - avgRawVal));
     Serial.print(" delta: "); Serial.print(deltaTime);
     Serial.print(" Mean BPM: "); Serial.print(meanBpm);
     Serial.print(" BPM: "); Serial.println(bpm);

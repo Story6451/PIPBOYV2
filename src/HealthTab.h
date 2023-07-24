@@ -13,7 +13,7 @@ class HealthTab : public Tab
     int8_t valuesArrayPosition;
     int32_t values[BUFFER_LENGTH];
     int32_t times[BUFFER_LENGTH];
-    bool firstbeat;
+    bool rising;
     int64_t time1;
     int64_t time2;
     int32_t deltaTime;
@@ -36,7 +36,8 @@ class HealthTab : public Tab
     String ModuleName(){return "STATS";}
   	void Setup();
   	void Loop();
-    int32_t StandardDeviation(int32_t dataset[], int32_t SIZE);
+    float StandardDeviation(int32_t dataset[], int32_t SIZE);
+    float Mean(int32_t dataset[], int32_t SIZE);
     void OutputThroughSerial();
     virtual void TFTOutput();
 };
