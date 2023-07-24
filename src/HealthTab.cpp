@@ -20,6 +20,7 @@ void HealthTab::Setup()
     rawVal = 0;
     deltaTime = 0;
     bpm = 0;
+    previousBpm = -1;
 
     meanBpm = 0;
     valuesArrayPosition = 0;
@@ -86,10 +87,8 @@ void HealthTab::Loop()
 
             bpm = 60000/deltaTime;
 
-            if (bpm < 300)
+            if ((bpm < 300) && (bpm != previousBpm))
             {
-                float stdev = StandardDeviation(bpms, BUFFER_LENGTH);
-                float mean = Mean(bpms, BUFFER_LENGTH);
 
                 bpms[bpmArrayPosition] = bpm;
                 
@@ -102,7 +101,8 @@ void HealthTab::Loop()
                     bpmArrayPosition++;
                 }
                 
-                meanBpm = mean;
+                previousBpm = bpm;
+                meanBpm = Mean(bpms, BUFFER_LENGTH);
             }
         }
         else
@@ -134,13 +134,17 @@ float HealthTab::StandardDeviation(int32_t dataset[], int32_t SIZE)
 float HealthTab::Mean(int32_t dataset[], int32_t SIZE)
 {
     int64_t sum = 0;
-
-    for(int i = 0; i < SIZE; i++)
+    int16_t emptyItems = 0;
+    for (int i = 0; i < SIZE; i++)
     {
+        if (dataset[i] == 0)
+        {
+            emptyItems++;
+        }
         sum += dataset[i];
     }
 
-    return sum / SIZE;
+    return sum / (SIZE - emptyItems);
 }
 
 void HealthTab::OutputThroughSerial()

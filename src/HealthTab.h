@@ -17,7 +17,8 @@ class HealthTab : public Tab
     int64_t time1;
     int64_t time2;
     int32_t deltaTime;
-    int16_t bpm;
+    float bpm;
+    float previousBpm;
     int16_t meanBpm;
     int8_t bpmArrayPosition;
     int32_t bpms[BUFFER_LENGTH];
