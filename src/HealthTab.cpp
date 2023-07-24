@@ -111,7 +111,7 @@ void HealthTab::Loop()
         }
     }
 
-    OutputThroughSerial();
+    //OutputThroughSerial();
     TFTOutput();
 
 }
