@@ -26,7 +26,6 @@ class HealthTab : public Tab
     
     int64_t t1;
     int64_t t2;
-    int64_t t3;
     int16_t step;
 
     //statistics stuff

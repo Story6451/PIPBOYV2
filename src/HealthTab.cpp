@@ -28,7 +28,6 @@ void HealthTab::Setup()
 
     t1 = 0;
     t2 = 0;
-    t3 = 0;
 
     for (int i = 0; i < BUFFER_LENGTH -1; i++)
     {
@@ -113,9 +112,6 @@ void HealthTab::Loop()
 
     //OutputThroughSerial();
     TFTOutput();
-
-    //comment out delay if serial output is active
-    delay(10);
 }
 
 float HealthTab::StandardDeviation(int32_t dataset[], int32_t SIZE)
@@ -162,7 +158,7 @@ void HealthTab::OutputThroughSerial()
 void HealthTab::TFTOutput()
 {
     t2 = millis();
-    if ((t2 - t1) > 1000) //check to see if a second has passed
+    if ((t2 - t1) > 10) //check to see if a second has passed
     {
         pTFT->setTextSize(2);
         pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
@@ -191,18 +187,15 @@ void HealthTab::TFTOutput()
         }
         pTFT->print(" ");
         t1 = t2;
+
+        pTFT->drawFastVLine(step, (320 - map(rawVal, 0, 1023, 0, 140)), map(rawVal, 0, 1023, 0, 140), pPIPDATA->ActiveColour);
+        step++;
     }
 
-    pTFT->drawFastVLine(step, (320 - map(rawVal, 0, 1023, 0, 140)), map(rawVal, 0, 1023, 0, 140), pPIPDATA->ActiveColour);
-    step++;
 
     if (step >= 240)
     {
         step = 0;
         pTFT->fillRect(0, 180, 240, 140, BLACK);
-    }
-    if ((t2 - t3) > 50)
-    {
-        t3 = t2;
     }
 }
