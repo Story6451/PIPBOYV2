@@ -152,13 +152,6 @@ void GPSTab::OutputThroughSerial()
     Serial.print("xpos: "); Serial.print(xScreenPos); Serial.print(" ");
     Serial.print("Altitude: "); Serial.print(altitude); Serial.print(" ");
     Serial.print("No.Satellites: "); Serial.print(satellites); Serial.println(" ");
-    /*
-    Serial.print("raw x: "); Serial.print(xPos, 7); Serial.print(" ");
-    Serial.print("raw y: "); Serial.print(yPos, 7); Serial.print(" ");
-    Serial.print("screen x: "); Serial.print(xScreenPos); Serial.print(" ");
-    Serial.print("screen y: "); Serial.print(yScreenPos); Serial.println(" ");
-    */
-    
 }
 
 void GPSTab::TFTOutput()
@@ -169,19 +162,11 @@ void GPSTab::TFTOutput()
 
         pTFT->drawBitmap(XOffset, YOffset, WorldMap2, MapWidth, MapHeight, pPIPDATA->ActiveColour);
 
-        //pTFT->fillCircle(oldXScreenPos + XOffset, oldYScreenPos + YOffset, 2, BLACK);
         oldXScreenPos = xScreenPos;
         oldYScreenPos = yScreenPos;
     }
     
-    
     pTFT->drawBitmap(xScreenPos + XOffset - 6, yScreenPos + YOffset - 6, CrossHair, 12, 12, 0xFFFF);
-    //pTFT->fillCircle(xScreenPos + XOffset, yScreenPos + YOffset, 2, RED);
-    
-    
-    //pTFT->setTextSize(2);
-    //pTFT->setCursor(100, 100);
-    //pTFT->print(ModuleName());
 
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
     pTFT->setCursor(0, 300);
