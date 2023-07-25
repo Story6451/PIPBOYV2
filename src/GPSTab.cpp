@@ -84,8 +84,8 @@ void GPSTab::Loop()
             }
 
             //calculate screen position
-            xScreenPos = LonToXPos(longitude);
             yScreenPos = LatToYPos(correctedLat);
+            xScreenPos = LonToXPos(longitude);
             OutputThroughSerial();
             TFTOutput();
         }
