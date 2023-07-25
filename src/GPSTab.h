@@ -9,9 +9,9 @@ class GPSTab : public Tab
 	const double scalingFactor = 1*pow(10, 6);
 	const double maxLatRad = 1.570796309;//89.999999(degrees) needs to be 1 more 9 than there are significant 0s
 	const double maxLat = 89.99999;
-	const uint16_t MapWidth = 415;
+	const uint16_t MapWidth = 459;
 	const uint16_t MapHeight = 239;
-	const uint16_t XOffset = 33;
+	const uint16_t XOffset = 10;
 	const uint16_t YOffset = 61;
   	double latitude;
   	double longitude;

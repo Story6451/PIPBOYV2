@@ -41,7 +41,7 @@ void GPSTab::Setup()
 
     timer = 0;
 
-    pTFT->drawBitmap(XOffset, YOffset, WorldMap3, MapWidth, MapHeight, pPIPDATA->ActiveColour);
+    pTFT->drawBitmap(XOffset, YOffset, WorldMap2, MapWidth, MapHeight, pPIPDATA->ActiveColour);
 }
 
 void GPSTab::Loop()
@@ -136,12 +136,12 @@ double GPSTab::MercRadToLat(double mercRad)
 double GPSTab::LatToYPos(double lat)
 {
     double mercRad = RadToMercRadians((lat * PI/180));
-    return (MapHeight/2)-(MapWidth * mercRad/(2 * PI));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
+    return (((double)MapHeight/2)-((double)MapWidth * mercRad/(2 * PI)));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
 }
 
 double GPSTab::LonToXPos(double lon)
 {
-    return (lon + 180) * (MapWidth/360); 
+    return ((lon + 180) * ((double)MapWidth/360)); 
 }
 
 void GPSTab::OutputThroughSerial()
@@ -165,17 +165,19 @@ void GPSTab::TFTOutput()
 {
     if ((oldXScreenPos != xScreenPos) || (oldYScreenPos != yScreenPos))
     {
-        pTFT->drawBitmap(XOffset, YOffset, WorldMap3, MapWidth, MapHeight, pPIPDATA->ActiveColour);
+        pTFT->fillRect(oldXScreenPos + XOffset - 6, oldYScreenPos + YOffset - 6, 12, 12, BLACK);
 
-        pTFT->fillCircle(oldXScreenPos + XOffset, oldYScreenPos + YOffset, 2, BLACK);
+        pTFT->drawBitmap(XOffset, YOffset, WorldMap2, MapWidth, MapHeight, pPIPDATA->ActiveColour);
+
+        //pTFT->fillCircle(oldXScreenPos + XOffset, oldYScreenPos + YOffset, 2, BLACK);
         oldXScreenPos = xScreenPos;
         oldYScreenPos = yScreenPos;
     }
-    else
-    {
-
-        pTFT->fillCircle(xScreenPos + XOffset, yScreenPos + YOffset, 2, RED);
-    }
+    
+    
+    pTFT->drawBitmap(xScreenPos + XOffset - 6, yScreenPos + YOffset - 6, CrossHair, 12, 12, 0xFFFF);
+    //pTFT->fillCircle(xScreenPos + XOffset, yScreenPos + YOffset, 2, RED);
+    
     
     //pTFT->setTextSize(2);
     //pTFT->setCursor(100, 100);
