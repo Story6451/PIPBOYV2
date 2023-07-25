@@ -85,7 +85,7 @@ void GPSTab::Loop()
 
             //calculate screen position
             yScreenPos = LatToYPos(correctedLat);
-            xScreenPos = LonToXPos(longitude);
+            xScreenPos = LonToXPos(longitude, correctedLat);
             OutputThroughSerial();
             TFTOutput();
         }
@@ -139,7 +139,7 @@ double GPSTab::LatToYPos(double lat)
     return (((double)MapHeight/2)-((double)MapWidth * mercRad/(2 * PI)));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
 }
 
-double GPSTab::LonToXPos(double lon)
+double GPSTab::LonToXPos(double lon, double lat)
 {
     return ((lon + 180) * ((double)MapWidth/360)); 
 }

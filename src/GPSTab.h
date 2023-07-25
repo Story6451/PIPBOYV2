@@ -47,7 +47,7 @@ class GPSTab : public Tab
 	//converts the latitude to an y coordinate for the screen
 	double LatToYPos(double lat);
 	//converts the latitude to an x coordinate for the screen
-	double LonToXPos(double lon);
+	double LonToXPos(double lon, double lat);
 	void OutputThroughSerial();
 	void TFTOutput();
 };
