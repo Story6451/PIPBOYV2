@@ -38,7 +38,7 @@ void GPSTab::Setup()
     yScreenPos = 0;
     oldXScreenPos = 0;
     oldYScreenPos = 0;
-
+    
     timer = 0;
 
     pTFT->drawBitmap(XOffset, YOffset, WorldMap2, MapWidth, MapHeight, pPIPDATA->ActiveColour);
@@ -98,7 +98,7 @@ void GPSTab::Loop()
             pTFT->print("Waiting for gps data!");
             pTFT->fillRect(0, 61, 480, 259, BLACK);
         }
-        GPSDelay(500);
+        GPSDelay(100);
 
         ss.end();
     }
@@ -169,7 +169,7 @@ void GPSTab::TFTOutput()
     pTFT->drawBitmap(xScreenPos + XOffset - 6, yScreenPos + YOffset - 6, CrossHair, 12, 12, 0xFFFF);
 
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
-    pTFT->setCursor(0, 300);
+    pTFT->setCursor(10, 300);
     pTFT->setTextSize(1);
     pTFT->print("Latitude: "); pTFT->print(latitude, 6); pTFT->print("   ");
     pTFT->print("Longitude: "); pTFT->print(longitude, 6); pTFT->print("   ");

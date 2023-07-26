@@ -18,14 +18,17 @@ void HealthTab::Setup()
     time2 = 0;
     rising = false;
     rawVal = 0;
+    avgRawVal = 0;
     deltaTime = 0;
     bpm = 0;
-    previousBpm = -1;
-
     meanBpm = 0;
+    previousBpm = -1;
+    arrayIsFull = false;
+
     valuesArrayPosition = 0;
     bpmArrayPosition = 0;
 
+    step = 0;
     t1 = 0;
     t2 = 0;
 
@@ -36,8 +39,6 @@ void HealthTab::Setup()
     
     pTFT->drawBitmap(270, 100, StatBoy, 200, 200, pPIPDATA->ActiveColour);
 }
-
-bool arrayIsFull = false;
 
 void HealthTab::Loop()
 {
@@ -131,25 +132,31 @@ float HealthTab::StandardDeviation(int32_t dataset[], int32_t SIZE)
 
 float HealthTab::Mean(int32_t dataset[], int32_t SIZE)
 {
-    int64_t sum = 0;
-    int16_t emptyItems = 0;
+    uint32_t sum = 0;
+    uint8_t invalidItems = 0;
     for (int i = 0; i < SIZE; i++)
     {
         if (dataset[i] == 0)
         {
-            emptyItems++;
+            invalidItems++;
         }
         sum += dataset[i];
     }
 
-    return sum / (SIZE - emptyItems);
+    if ((SIZE - invalidItems) == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        return (float)(sum/(SIZE - invalidItems));
+    }
 }
 
 void HealthTab::OutputThroughSerial()
 {
     Serial.print(" Analog value: "); Serial.print(rawVal);
     Serial.print(" Mean value: "); Serial.print(avgRawVal);
-    Serial.print(" Delta raw values: "); Serial.print(abs(rawVal - avgRawVal));
     Serial.print(" delta: "); Serial.print(deltaTime);
     Serial.print(" Mean BPM: "); Serial.print(meanBpm);
     Serial.print(" BPM: "); Serial.println(bpm);
@@ -158,7 +165,7 @@ void HealthTab::OutputThroughSerial()
 void HealthTab::TFTOutput()
 {
     t2 = millis();
-    if ((t2 - t1) > 10) //check to see if a second has passed
+    if ((t2 - t1) > 10) //check to see if 10ms has passed
     {
         pTFT->setTextSize(2);
         pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
@@ -168,7 +175,7 @@ void HealthTab::TFTOutput()
         pTFT->print("AVG BPM: "); 
         if (meanBpm < 300)
         {
-            pTFT->print(meanBpm); pTFT->print("  "); 
+            pTFT->print(meanBpm, 2); pTFT->print("  "); 
         }
         else
         {
@@ -179,7 +186,7 @@ void HealthTab::TFTOutput()
         pTFT->print("BPM:"); 
         if (bpm < 300)
         {
-            pTFT->print(bpm);  pTFT->print("  "); 
+            pTFT->print(bpm, 2);  pTFT->print("  "); 
         }
         else
         {

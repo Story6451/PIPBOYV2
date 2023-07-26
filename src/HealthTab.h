@@ -19,18 +19,14 @@ class HealthTab : public Tab
     int32_t deltaTime;
     float bpm;
     float previousBpm;
-    int16_t meanBpm;
+    float meanBpm;
     int8_t bpmArrayPosition;
     int32_t bpms[BUFFER_LENGTH];
-
+    bool arrayIsFull;
     
     int64_t t1;
     int64_t t2;
     int16_t step;
-
-    //statistics stuff
-    //int32_t standardDeviation;
-
   public:
   	HealthTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData);
     String ModuleName(){return "STATS";}
