@@ -84,8 +84,10 @@ void GPSTab::Loop()
             }
 
             //calculate screen position
-            yScreenPos = LatToYPos(correctedLat);
-            xScreenPos = LonToXPos(longitude, correctedLat);
+            //yScreenPos = MercLatToYPos(correctedLat);
+            //xScreenPos = MercLonToXPos(longitude, correctedLat);
+            xScreenPos = EquirectangularLongToXPos(longitude, correctedLat);
+            yScreenPos = EquirectangularLatToYPos(correctedLat);
             OutputThroughSerial();
             TFTOutput();
         }
@@ -133,15 +135,25 @@ double GPSTab::MercRadToLat(double mercRad)
     return 2 * atan(exp(mercRad)) - PI/2;
 }
 
-double GPSTab::LatToYPos(double lat)
+double GPSTab::MercLatToYPos(double lat)
 {
     double mercRad = RadToMercRadians((lat * PI/180));
-    return (((double)MapHeight/2)-((double)MapWidth * mercRad/(2 * PI)));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
+    return ((double)MapHeight/2)-((double)MapWidth * mercRad/(2 * PI));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
 }
 
-double GPSTab::LonToXPos(double lon, double lat)
+double GPSTab::MercLonToXPos(double lon, double lat)
 {
-    return ((lon + 180) * ((double)MapWidth/360)); 
+    return (lon + 180) * ((double)MapWidth/360); 
+}
+
+double GPSTab::EquirectangularLongToXPos(double lon, double lat)
+{
+    return ((double)MapWidth/360) * (lon + 180);
+}
+
+double GPSTab::EquirectangularLatToYPos(double lat)
+{
+    return (double)MapHeight-((lat + 90) * (double)MapHeight/180);
 }
 
 void GPSTab::OutputThroughSerial()

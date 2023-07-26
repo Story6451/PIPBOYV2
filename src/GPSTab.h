@@ -44,10 +44,14 @@ class GPSTab : public Tab
 	double RadToMercRadians(double latRad);
 	//convert merc radians to latitude
 	double MercRadToLat(double mercRad);
-	//converts the latitude to an y coordinate for the screen
-	double LatToYPos(double lat);
-	//converts the latitude to an x coordinate for the screen
-	double LonToXPos(double lon, double lat);
+	//converts the latitude to an y coordinate for the screen with mercator projections
+	double MercLatToYPos(double lat); 
+	//converts the latitude to an x coordinate for the screen with mercator projections
+	double MercLonToXPos(double lon, double lat);
+	//converts the latitude to an y coordinate for the screen with equirectangular projections
+	double EquirectangularLatToYPos(double lat);
+	//converts the longitude to an x coordinate for the screen with equirectangular projections
+	double EquirectangularLongToXPos(double lon, double lat);
 	void OutputThroughSerial();
 	void TFTOutput();
 };
