@@ -2,16 +2,16 @@
 #include <SD.h>
 #include <RTClib.h>
 #include "SparkFunMPL3115A2.h"
-#include <MQ7.h>
+//#include <MQ7.h>
 #include <Adafruit_TFTLCD.h>
 #include <Colours.h>
 
-#define analogPin 5
-#define voltage 5
+//#define COSensorPin 6
+//#define voltage 5
 
 RTC_DS3231 clock;
 MPL3115A2 barometer;
-MQ7 mq7(analogPin, voltage);
+//MQ7 mq7(COSensorPin, voltage);
 
 SensorsTab::SensorsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
 {
@@ -41,15 +41,15 @@ void SensorsTab::Setup()
     //    clock.begin();
 
     barometer.begin();
-    //Serial.println("A");
+
     barometer.setModeBarometer();
-    //Serial.println("A");
+
     barometer.setOversampleRate(7);  
-    //Serial.println("A");
+
     barometer.enableEventFlags(); 
-    //Serial.println("A");
-    mq7.calibrate();
-    //Serial.println("A");
+
+    //mq7.calibrate();
+
 }
 
 void SensorsTab::Loop()
@@ -78,7 +78,7 @@ float SensorsTab::GetAltitude() //uses a formula to calculate the altitude from 
 
 float SensorsTab::GetCO()
 {
-    return mq7.readPpm();
+    //return mq7.readPpm();
 }
 
 String SensorsTab::GetDateTime()
@@ -146,8 +146,8 @@ void SensorsTab::OutputThroughSerial()
     Serial.print(" Temperature: ");
     Serial.print(GetTemperature());
     Serial.print("°C ");
-    Serial.print(" CO PPM: ");
-    Serial.println(GetCO());
+    //Serial.print(" CO PPM: ");
+    //Serial.println(GetCO());
 
     //delay(100);
 }
@@ -171,5 +171,5 @@ void SensorsTab::TFTOutput()
     pTFT->print("  Temperature: "); pTFT->print(GetTemperature()); pTFT->println(" 'C "); 
     
     //displays carbon monoxide levels
-    pTFT->print("  CO PPM: "); pTFT->print(GetCO());
+    //pTFT->print("  CO PPM: "); pTFT->print(GetCO());
 }
