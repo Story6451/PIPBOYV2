@@ -84,6 +84,26 @@ void GPSTab::Loop()
             }
 
             //calculate screen position
+            ///*SUDAN 16.465764445765306, 29.54627685797427
+            //correctedLat = 16.465764445765306;
+            //longitude = 29.54627685797427;
+            
+            ///*JAPAN 36.54343554246808, 139.25918808522488
+            //correctedLat = 36.54343554246808;
+            //longitude = 139.25918808522488;
+            
+            //NEW ZEALAND -42.088667969077676, 172.22672190419098
+            //correctedLat = -42.088667969077676;
+            //longitude = 172.22672190419098;
+            
+            ///*CANADA 58.231708432811345, -101.43666168828908
+            //correctedLat = 58.231708432811345;
+            //longitude = -101.43666168828908;
+            
+            //CHILE -26.505485584708655, -69.43743084284017
+            //correctedLat = -26.505485584708655;
+            //longitude = -69.43743084284017;
+            
             //yScreenPos = MercLatToYPos(correctedLat);
             //xScreenPos = MercLonToXPos(longitude, correctedLat);
             xScreenPos = EquirectangularLongToXPos(longitude, correctedLat);
@@ -158,12 +178,12 @@ double GPSTab::EquirectangularLatToYPos(double lat)
 
 void GPSTab::OutputThroughSerial()
 {
-    Serial.print("lat: "); Serial.print(latitude, 7); Serial.print(" ");
-    Serial.print("long: "); Serial.print(longitude, 7); Serial.print(" ");
-    Serial.print("ypos: "); Serial.print(yScreenPos); Serial.print(" ");
-    Serial.print("xpos: "); Serial.print(xScreenPos); Serial.print(" ");
-    Serial.print("Altitude: "); Serial.print(altitude); Serial.print(" ");
-    Serial.print("No.Satellites: "); Serial.print(satellites); Serial.println(" ");
+    Serial.print("lat: "); Serial.print(latitude, 7); 
+    Serial.print(" long: "); Serial.print(longitude, 7); 
+    Serial.print(" ypos: "); Serial.print(yScreenPos); 
+    Serial.print(" xpos: "); Serial.print(xScreenPos); 
+    Serial.print(" Altitude: "); Serial.print(altitude); 
+    Serial.print(" No.Satellites: "); Serial.print(satellites); Serial.println(" ");
 }
 
 void GPSTab::TFTOutput()
@@ -183,9 +203,9 @@ void GPSTab::TFTOutput()
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
     pTFT->setCursor(10, 300);
     pTFT->setTextSize(1);
-    pTFT->print("Latitude: "); pTFT->print(latitude, 6); pTFT->print("   ");
-    pTFT->print("Longitude: "); pTFT->print(longitude, 6); pTFT->print("   ");
-    pTFT->print("Altitude: "); pTFT->print(altitude, 2); pTFT->print("   ");
-    pTFT->print("Satellites: "); pTFT->print(satellites); pTFT->print("   ");
+    pTFT->print(" Latitude: "); pTFT->print(latitude, 6); 
+    pTFT->print(" Longitude: "); pTFT->print(longitude, 6); 
+    pTFT->print(" Altitude: "); pTFT->print(altitude, 2); 
+    pTFT->print(" Satellites: "); pTFT->print(satellites); pTFT->print(" ");
 
 }

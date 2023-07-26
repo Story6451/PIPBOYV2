@@ -261,8 +261,8 @@ void setup()
 
   SerialSetupLogger();
   PeripheralSetup();
-  DrawTabs();
   GetSettings();
+  DrawTabs();
 }
 
 void loop() 
