@@ -134,13 +134,13 @@ float HealthTab::Mean(int32_t dataset[], int32_t SIZE)
 {
     uint32_t sum = 0;
     uint8_t invalidItems = 0;
-    for (int i = 0; i < SIZE; i++)
+    for (int i = 0; i < SIZE - 1; i++)
     {
         if (dataset[i] == 0)
         {
             invalidItems++;
         }
-        sum += dataset[i];
+        sum += (uint32_t)dataset[i];
     }
 
     if ((SIZE - invalidItems) == 0)
