@@ -5,18 +5,36 @@
 
 OptionsTab::OptionsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
 {
+    horozontalIndex = 0;
+    prevHorozontalIndex = 0;
 }
 
 void OptionsTab::Setup()
 {
+    pTFT->setTextSize(2);
+    pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);  
     lastCLK = digitalRead(pPIPDATA->ENCODER_CLK);
     dataToBeSaved = "";
-    horozontalIndex = 0;
     timer = 0;
     verticalIndex = 0;
     oldIndex = -1;
-    pTFT->setTextSize(2);
-    pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);   
+    altitudeOffset = pPIPDATA->AltitudeOffset;
+    volume = pPIPDATA->Volume; 
+    switch (pPIPDATA->ActiveColour)
+    {
+        case 64512:
+            colourIndex = 0;
+            break;
+        case 7836:
+            colourIndex = 1;
+            break;
+        case 9537:
+            colourIndex = 2;
+            break;
+        case -23214:
+            colourIndex = 3;
+            break;
+    }
 }
 
 void OptionsTab::Loop()
@@ -41,11 +59,78 @@ void OptionsTab::Loop()
         switch (verticalIndex)
         {
             case 0:
+                if (horozontalIndex > prevHorozontalIndex)
+                {
+                    colourIndex++;
+                }
+                else if (horozontalIndex < prevHorozontalIndex)
+                {
+                    colourIndex--;
+                }
+
+                if (colourIndex > 3)
+                {
+                    colourIndex = 3;
+                }
+                else if (colourIndex < 0)
+                {
+                    colourIndex = 0;
+                }
+                switch (colourIndex)
+                {
+                    case 0:
+                        pPIPDATA->ActiveColour = AMBER;
+                        break;
+                    case 1:
+                        pPIPDATA->ActiveColour = BLUE;
+                        break;
+                    case 2:
+                        pPIPDATA->ActiveColour = GREEN;
+                        break;
+                    case 3:
+                        pPIPDATA->ActiveColour = WHITE;
+                        break;
+                }
                 break;
-        
+            case 1:
+                if (horozontalIndex > prevHorozontalIndex)
+                {
+                    altitudeOffset += 10;
+                }
+                else if (horozontalIndex < prevHorozontalIndex)
+                {
+                    altitudeOffset -= 10;
+                }
+                if (altitudeOffset > 200)
+                {
+                    altitudeOffset = 200;
+                }
+                else if (altitudeOffset == 0)
+                {
+                    altitudeOffset = 0;
+                }
+                pPIPDATA->AltitudeOffset = altitudeOffset;
+                break;
+            case 2:
+                if (horozontalIndex > prevHorozontalIndex)
+                {
+                    volume += 10;
+                }
+                else if (horozontalIndex < prevHorozontalIndex)
+                {
+                    volume -= 10;
+                }
+                if (volume > 100)
+                {
+                    volume = 100;
+                }
+                else if (volume < 0)
+                {
+                    volume = 0;
+                }
+                pPIPDATA->Volume = volume;
         }
-        
-        Serial.print(" index "); Serial.println(horozontalIndex);
+        prevHorozontalIndex = horozontalIndex;
     }
 
     /*

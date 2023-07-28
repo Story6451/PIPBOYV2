@@ -12,7 +12,11 @@ class OptionsTab : public Tab
         uint8_t currentCLK;
         uint8_t lastCLK;
         uint8_t horozontalIndex;
+        uint8_t prevHorozontalIndex;
         uint64_t timer;
+        uint8_t colourIndex;
+        uint8_t altitudeOffset;
+        uint8_t volume;
         //uint8_t index1;
         //uint8_t index2;
         //uint8_t select;
