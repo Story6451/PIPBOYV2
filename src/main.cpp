@@ -31,10 +31,6 @@ Tab* Tabs[5];
 
 uint32_t Tab::Total = -1;
 
-//rotary encoder variables
-int32_t currentState = 0;
-int32_t lastState = 0;
-
 //button pins
 const uint32_t BTN_1_PIN = 5;//refreshing button
 const uint32_t BTN_2_PIN = 7;//locking button
@@ -117,9 +113,8 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
   }
 
   //encoder setup
-  pinMode(pipData.ENCODER_1_CLK, INPUT);
-  pinMode(pipData.ENCODER_1_DT, INPUT);
-  lastState = digitalRead(pipData.ENCODER_1_CLK);
+  pinMode(pipData.ENCODER_CLK, INPUT);
+  pinMode(pipData.ENCODER_DT, INPUT);
 
   //Button inputs
   pinMode(BTN_1_PIN, INPUT); 
@@ -296,7 +291,6 @@ void loop()
   
 
 
-
   int btnState2 = digitalRead(BTN_2_PIN); //restarts the current module
   if (btnState2 == HIGH)
   {
@@ -307,35 +301,13 @@ void loop()
   if (pipData.Locked == false) //main routine for running through the tabs loop
   {
 
-    //val1 = analogRead(pipData.POT_1_PIN);
-    currentState = digitalRead(pipData.ENCODER_1_CLK);
-
-    if ((currentState != lastState) && (currentState == 1))
-    {
-      if (digitalRead(pipData.ENCODER_1_DT) != currentState)
-      {
-        counter--;
-        index--;
-      }
-      else
-      {
-        counter++;
-        index++;
-      }
-      Serial.println(counter);
-    }
-    lastState = currentState;
-
-    //index = val1/incrementalStep;
+    val1 = analogRead(pipData.POT_1_PIN);
+    
+    index = val1/incrementalStep;
     if (index > Tab::Total) //sets index = to the current value of the horozontal potentiometer
     {
       index = Tab::Total;
     }
-    if (index < 0)
-    {
-      index = 0;
-    }
-
 
     if (index == oldIndex)
     {

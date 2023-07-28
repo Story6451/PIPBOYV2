@@ -24,8 +24,8 @@ class HealthTab : public Tab
     int32_t bpms[BUFFER_LENGTH];
     bool arrayIsFull;
     
-    int64_t t1;
-    int64_t t2;
+    uint64_t t1;
+    uint64_t t2;
     int16_t step;
   public:
   	HealthTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData);

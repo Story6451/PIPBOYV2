@@ -3,22 +3,52 @@
 #include <Adafruit_TFTLCD.h>
 #include <SD.h>
 
-
-const byte totalAdjustableValues = 3;
-
 OptionsTab::OptionsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
 {
-    select = 0;
-    selected = false;
-    dataToBeSaved = "";
 }
 
 void OptionsTab::Setup()
 {
+    lastCLK = digitalRead(pPIPDATA->ENCODER_CLK);
+    dataToBeSaved = "";
+    horozontalIndex = 0;
+    timer = 0;
+    verticalIndex = 0;
+    oldIndex = -1;
+    pTFT->setTextSize(2);
+    pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);   
 }
 
 void OptionsTab::Loop()
 {
+    if (pPIPDATA->Locked == true)
+    {
+        verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*3)/1023);
+
+        currentCLK = digitalRead(pPIPDATA->ENCODER_CLK);
+        if ((currentCLK != lastCLK) && (currentCLK == 1))
+        {
+            if (digitalRead(pPIPDATA->ENCODER_DT) != currentCLK)
+            {
+                horozontalIndex--;
+            }
+            else
+            {
+                horozontalIndex++;
+            }
+        }
+        lastCLK = currentCLK;
+        switch (verticalIndex)
+        {
+            case 0:
+                break;
+        
+        }
+        
+        Serial.print(" index "); Serial.println(horozontalIndex);
+    }
+
+    /*
     int val1 = analogRead(pPIPDATA->POT_1_PIN); // horozontal control
     int val2 = analogRead(pPIPDATA->POT_2_PIN); //vertical control
     int btnState3 = digitalRead(pPIPDATA->BTN_3_PIN);
@@ -101,62 +131,71 @@ void OptionsTab::Loop()
         selected = false;
         select = 100;
     }
+    */
+    SaveSettings();
+    TFTOutput();
+}
 
+void OptionsTab::SaveSettings()
+{
     dataToBeSaved = pPIPDATA->ActiveColour;
     dataToBeSaved += ",";
     dataToBeSaved += pPIPDATA->AltitudeOffset;
     dataToBeSaved += ",";
     dataToBeSaved += pPIPDATA->Volume;
     dataToBeSaved += ",";
-    Serial.println(dataToBeSaved);
 
     if (SD.exists("config.txt"))
     {
         SD.remove("config.txt");
-        Serial.println("file exists");
         File file = SD.open("config.txt", FILE_WRITE);
         if (file)
         {
-            Serial.println("writing");
-            file.print(dataToBeSaved);
             file.close();
         }
     }
-    TFTOutput();
 }
-
 
 void OptionsTab::TFTOutput()
 {
-    pTFT->setTextSize(2);
-    pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
-
-    String currentColour;
-
-    switch (pPIPDATA->ActiveColour)
+    if ((millis() - timer) > 200)
     {
-        case 64512:
-            currentColour = "AMBER";
-            break;
-        case 7836:
-            currentColour = "BLUE";
-            break;
-        case 9537:
-            currentColour = "GREEN";
-            break;
-        case -23214:
-            currentColour = "WHITE";
-            break;
-        default:
-            currentColour = pPIPDATA->ActiveColour;
-            break;
+        if (verticalIndex != oldIndex)
+        {
+            pTFT->drawRect(10, oldIndex * 220/totalAdjustableValues + 93, 320, 30, BLACK);
+            oldIndex = verticalIndex;
+        }
+        pTFT->drawRect(10, verticalIndex * 220/totalAdjustableValues + 93, 320, 30, pPIPDATA->ActiveColour);
+
+        String currentColour;
+
+        switch (pPIPDATA->ActiveColour)
+        {
+            case 64512:
+                currentColour = "AMBER";
+                break;
+            case 7836:
+                currentColour = "BLUE";
+                break;
+            case 9537:
+                currentColour = "GREEN";
+                break;
+            case -23214:
+                currentColour = "WHITE";
+                break;
+            default:
+                currentColour = pPIPDATA->ActiveColour;
+                break;
+        }
+        pTFT->setCursor(20, 100);
+        pTFT->print("Colour Mode: "); pTFT->print(currentColour);
+
+        pTFT->setCursor(20, 173);
+        pTFT->print("Altitude Offset (m): "); pTFT->print(pPIPDATA->AltitudeOffset); pTFT->println("  ");
+
+        pTFT->setCursor(20, 246);
+        pTFT->print("Volume: "); pTFT->print(pPIPDATA->Volume); pTFT->println("  ");
+
+        timer = millis();
     }
-    pTFT->setCursor(20, 100);
-    pTFT->print("Colour Mode: "); pTFT->print(currentColour);
-
-    pTFT->setCursor(20, 173);
-    pTFT->print("Altitude Offset (m): "); pTFT->print(pPIPDATA->AltitudeOffset); pTFT->println("  ");
-
-    pTFT->setCursor(20, 246);
-    pTFT->print("Volume: "); pTFT->print(pPIPDATA->Volume); pTFT->println("  ");
 }
