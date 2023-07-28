@@ -6,17 +6,19 @@
 class ConfigData
 {
     public:
-        int ActiveColour;
+        uint32_t ActiveColour;
         byte AltitudeOffset;
         byte Volume;
         byte Height;
-        int Mass;
+        uint32_t Mass;
         //const byte TotalAdjustableValues = 3;
 
-        const int BTN_3_PIN = 6;
         bool Locked;
-        const int POT_1_PIN = 5; 
-        const int POT_2_PIN = 7;
+        const uint32_t ENCODER_1_CLK = 2;
+        const uint32_t ENCODER_1_DT = 3;
+        const uint32_t POT_1_PIN = 5; 
+        const uint32_t POT_2_PIN = 7;
+        const uint32_t BTN_3_PIN = 6;
 
         ConfigData() :ActiveColour(GREEN), AltitudeOffset(50), Volume(50), Locked(false){}
 };

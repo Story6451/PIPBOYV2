@@ -120,7 +120,7 @@ void GPSTab::Loop()
             pTFT->print("Waiting for gps data!");
             pTFT->fillRect(0, 61, 480, 259, BLACK);
         }
-        GPSDelay(100);
+        GPSDelay(50);
 
         ss.end();
     }

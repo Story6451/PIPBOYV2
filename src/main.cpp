@@ -29,40 +29,45 @@ ConfigData pipData;
 
 Tab* Tabs[5];
 
-int Tab::Total = -1;
+uint32_t Tab::Total = -1;
+
+//rotary encoder variables
+int32_t currentState = 0;
+int32_t lastState = 0;
 
 //button pins
-const int BTN_1_PIN = 5;//refreshing button
-const int BTN_2_PIN = 7;//locking button
-
+const uint32_t BTN_1_PIN = 5;//refreshing button
+const uint32_t BTN_2_PIN = 7;//locking button
 
 //led pins (all unused)
-const int LED_1_PIN = 6; 
-const int LED_2_PIN = 7;
-const int LED_3_PIN = 8;
+const uint32_t LED_1_PIN = 6; 
+const uint32_t LED_2_PIN = 7;
+const uint32_t LED_3_PIN = 8;
 
-int val1 = 0;
-int val2 = 0;
+int32_t val1 = 0;
+int32_t val2 = 0;
 
 bool locked = false;
-int prevBtnState1 = LOW;
-int oldIndex = 0;
-int index = 0;
-int prevPipColour;
+int32_t prevBtnState1 = LOW;
+int32_t oldIndex = 0;
+int32_t index = 0;
+int32_t prevPipColour;
 
-word incrementalStep;
+uint16_t incrementalStep;
 
 Sd2Card card;
 SdVolume volume;
 
-const int chipSelect = 53;
+const uint32_t chipSelect = 53;
 
 void SerialSetupLogger() //logs tft info to the serial monitor
 {
   Serial.println("Hello, world!");
 
   if (tft.readID() == 0x8357)
+  {
     Serial.println("Found LCD");
+  }
   else 
   {
     Serial.print("Could not find LCD Instead found tft with identifier: "); Serial.println(tft.readID());
@@ -110,6 +115,11 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
     tft.println("SD card 2 initialisation failed");
     Serial.println("SD card 2 initialisation failed");
   }
+
+  //encoder setup
+  pinMode(pipData.ENCODER_1_CLK, INPUT);
+  pinMode(pipData.ENCODER_1_DT, INPUT);
+  lastState = digitalRead(pipData.ENCODER_1_CLK);
 
   //Button inputs
   pinMode(BTN_1_PIN, INPUT); 
@@ -198,6 +208,7 @@ void DrawTabs() //draws the top menu bar
     tft.setCursor((i * tft.width()/(Tab::Total + 1)) + 5, 20);
     tft.print(Tabs[i]->ModuleName());
   }
+  
 }
 
 void GetSettings()
@@ -265,6 +276,7 @@ void setup()
   DrawTabs();
 }
 
+int counter = 0;
 void loop() 
 {
   //Serial.println(analogRead(A15));
@@ -275,16 +287,16 @@ void loop()
   if (btnState1 != prevBtnState1) //checks to see if the btn has been pressed
   {
     if (btnState1 == HIGH)
+    {
       pipData.Locked = !pipData.Locked;
-      //locked = !locked;
+    }
     
     prevBtnState1 = btnState1;
   }
-
-  index = val1/incrementalStep;
-  if (index > Tab::Total) //sets index = to the current value of the horozontal potentiometer
-    index = Tab::Total;
   
+
+
+
   int btnState2 = digitalRead(BTN_2_PIN); //restarts the current module
   if (btnState2 == HIGH)
   {
@@ -292,12 +304,43 @@ void loop()
     Tabs[index]->Setup();
   } 
 
-  if (!pipData.Locked) //main routine for running through the tabs loop
+  if (pipData.Locked == false) //main routine for running through the tabs loop
   {
-    val1 = analogRead(pipData.POT_1_PIN);
+
+    //val1 = analogRead(pipData.POT_1_PIN);
+    currentState = digitalRead(pipData.ENCODER_1_CLK);
+
+    if ((currentState != lastState) && (currentState == 1))
+    {
+      if (digitalRead(pipData.ENCODER_1_DT) != currentState)
+      {
+        counter--;
+        index--;
+      }
+      else
+      {
+        counter++;
+        index++;
+      }
+      Serial.println(counter);
+    }
+    lastState = currentState;
+
+    //index = val1/incrementalStep;
+    if (index > Tab::Total) //sets index = to the current value of the horozontal potentiometer
+    {
+      index = Tab::Total;
+    }
+    if (index < 0)
+    {
+      index = 0;
+    }
+
 
     if (index == oldIndex)
+    {
       Tabs[index]->Loop();
+    }
     else
     {
       DrawMenuCursur(index, oldIndex);

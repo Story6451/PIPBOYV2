@@ -8,7 +8,7 @@ class Adafruit_TFTLCD;
 class Tab
 {
     public:
-        static int Total;
+        static uint32_t Total;
 
     protected:
         Adafruit_TFTLCD *pTFT;
