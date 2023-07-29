@@ -13,10 +13,10 @@ class GPSTab : public Tab
 	const uint16_t WorldMapHeight = 239;
 	const uint16_t AfricaMapWidth = 231;
 	const uint16_t AfricaMapHeight = 239;
-	const uint16_t AsiaMapWidth = 0;
-	const uint16_t AsiaMapHeight = 0;
-	const uint16_t AustraliaMapWidth = 0;
-	const uint16_t AustraliaMapHeight = 0;
+	const uint16_t AsiaMapWidth = 420;
+	const uint16_t AsiaMapHeight = 239;
+	const uint16_t AustraliaMapWidth = 380;
+	const uint16_t AustraliaMapHeight = 239;
 	const uint16_t EuropeMapWidth = 480;
 	const uint16_t EuropeMapHeight = 239;
 	const uint16_t NorthAmericaMapWidth = 480;

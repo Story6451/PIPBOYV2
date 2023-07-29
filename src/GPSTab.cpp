@@ -245,7 +245,22 @@ void GPSTab::TFTDrawMap()
     switch (verticalIndex)
     {
         case 1:
-            /* code */
+            pTFT->drawBitmap(XOffset, YOffset, AfricaMap, AfricaMapWidth, AfricaMapHeight, pPIPDATA->ActiveColour);
+            break;
+        case 2:
+            pTFT->drawBitmap(XOffset, YOffset, AsiaMap, AsiaMapWidth, AsiaMapHeight, pPIPDATA->ActiveColour);
+            break;
+        case 3:
+            pTFT->drawBitmap(XOffset, YOffset, AustraliaMap, AustraliaMapWidth, AustraliaMapHeight, pPIPDATA->ActiveColour);
+            break;
+        case 4:
+            pTFT->drawBitmap(XOffset, YOffset, EuropeMap, EuropeMapWidth, EuropeMapHeight, pPIPDATA->ActiveColour);
+            break;
+        case 5:
+            pTFT->drawBitmap(XOffset, YOffset, NorthAmericaMap, NorthAmericaMapWidth, NorthAmericaHeight, pPIPDATA->ActiveColour);
+            break;
+        case 6:
+            pTFT->drawBitmap(XOffset, YOffset, SouthAmericaMap, SouthAmericaMapWidth, SouthAmericaMapHeight, pPIPDATA->ActiveColour);
             break;
         default:
             pTFT->drawBitmap(XOffset, YOffset, WorldMap, WorldMapWidth, WorldMapHeight, pPIPDATA->ActiveColour);
