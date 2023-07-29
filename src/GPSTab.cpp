@@ -97,8 +97,8 @@ void GPSTab::Loop()
                 //longitude = -101.43666168828908;
                 
                 //CHILE -26.505485584708655, -69.43743084284017
-                //correctedLat = -26.505485584708655;
-                //longitude = -69.43743084284017;
+                correctedLat = -26.505485584708655;
+                longitude = -69.43743084284017;
                 
                 //yScreenPos = MercLatToYPos(correctedLat);
                 //xScreenPos = MercLonToXPos(longitude, correctedLat);
@@ -227,6 +227,7 @@ void GPSTab::TFTOutput()
         oldXScreenPos = xScreenPos;
         oldYScreenPos = yScreenPos;
     }
+    TFTDrawMap();
     
     pTFT->drawBitmap(xScreenPos + XOffset + xCursurOffset, yScreenPos + YOffset + yCursurOffset, CrossHair, 12, 12, 0xFFFF);
 
