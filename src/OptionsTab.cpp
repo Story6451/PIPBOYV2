@@ -13,7 +13,7 @@ void OptionsTab::Setup()
 {
     pTFT->setTextSize(2);
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);  
-    lastCLK = digitalRead(pPIPDATA->ENCODER_CLK);
+
     dataToBeSaved = "";
     timer = 0;
     verticalIndex = 0;
@@ -31,7 +31,7 @@ void OptionsTab::Setup()
         case 9537:
             colourIndex = 2;
             break;
-        case -23214:
+        case 42322:
             colourIndex = 3;
             break;
     }
@@ -42,20 +42,8 @@ void OptionsTab::Loop()
     if (pPIPDATA->Locked == true)
     {
         verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*3)/1023);
+        horozontalIndex = pPIPDATA->encoderValue;
 
-        currentCLK = digitalRead(pPIPDATA->ENCODER_CLK);
-        if ((currentCLK != lastCLK) && (currentCLK == 1))
-        {
-            if (digitalRead(pPIPDATA->ENCODER_DT) != currentCLK)
-            {
-                horozontalIndex--;
-            }
-            else
-            {
-                horozontalIndex++;
-            }
-        }
-        lastCLK = currentCLK;
         switch (verticalIndex)
         {
             case 0:
@@ -132,91 +120,6 @@ void OptionsTab::Loop()
         }
         prevHorozontalIndex = horozontalIndex;
     }
-
-    /*
-    int val1 = analogRead(pPIPDATA->POT_1_PIN); // horozontal control
-    int val2 = analogRead(pPIPDATA->POT_2_PIN); //vertical control
-    int btnState3 = digitalRead(pPIPDATA->BTN_3_PIN);
-
-
-    if (pPIPDATA->Locked)
-    {
-        index1 = round(val1/(1023/4));
-        index2 = round(val2/(1023/totalAdjustableValues));
-
-        if (btnState3 == HIGH)
-        {
-            selected = !selected;
-            if (selected)
-                select = index2;
-            else
-                select = 100;
-        }
-
-        if (index2 == oldIndex)
-        {
-
-            switch (index2)
-            {
-                case 0:
-                    if (selected && select == 0)
-                    {
-                        switch (index1)
-                        {
-                            case 0:
-                                pPIPDATA->ActiveColour = AMBER;
-                                break;
-                            case 1:
-                                pPIPDATA->ActiveColour = BLUE;
-                                break;
-                            case 2:
-                                pPIPDATA->ActiveColour = GREEN;
-                                break;
-                            default:
-                                pPIPDATA->ActiveColour = WHITE;
-                                break;
-                        }
-                    }
-                    break;
-                case 1:
-                    if (selected && select == 1)
-                    {
-                        pPIPDATA->AltitudeOffset = map(val1, 1, 1023, 1, 210);
-                        if (pPIPDATA->AltitudeOffset > 200)
-                            pPIPDATA->AltitudeOffset = 200;
-                        else if (pPIPDATA->AltitudeOffset < 20)
-                            pPIPDATA->AltitudeOffset = 0;
-                    }
-                    break;
-                default:
-                    if (selected && select == 2)
-                    {
-                        pPIPDATA->Volume = map(val1, 1, 1023, 1, 110);
-                        if (pPIPDATA->Volume > 100)
-                            pPIPDATA->Volume = 100;
-                        else if (pPIPDATA->Volume < 20)
-                            pPIPDATA->Volume = 0;
-                    }
-                    break;
-            }
-        } 
-        else if (selected)
-        {
-            index2 = oldIndex;
-        }
-        else 
-            pTFT->drawRect(10, oldIndex * 220/totalAdjustableValues + 93, 320, 30, BLACK);
- 
-        oldIndex = index2; 
-        pTFT->drawRect(10, index2 * 220/totalAdjustableValues + 93, 320, 30, pPIPDATA->ActiveColour);
-    }
-    else
-    {
-        pTFT->drawRect(10, oldIndex * 220/totalAdjustableValues + 93, 320, 30, BLACK);
-        selected = false;
-        select = 100;
-    }
-    */
     SaveSettings();
     TFTOutput();
 }
@@ -265,7 +168,7 @@ void OptionsTab::TFTOutput()
             case 9537:
                 currentColour = "GREEN";
                 break;
-            case -23214:
+            case 42322:
                 currentColour = "WHITE";
                 break;
             default:

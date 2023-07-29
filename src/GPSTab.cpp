@@ -108,7 +108,7 @@ void GPSTab::Loop()
             //xScreenPos = MercLonToXPos(longitude, correctedLat);
             xScreenPos = EquirectangularLongToXPos(longitude, correctedLat);
             yScreenPos = EquirectangularLatToYPos(correctedLat);
-            OutputThroughSerial();
+            //OutputThroughSerial();
             TFTOutput();
         }
         else

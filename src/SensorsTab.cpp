@@ -54,7 +54,7 @@ void SensorsTab::Setup()
 
 void SensorsTab::Loop()
 {
-    OutputThroughSerial();
+    //OutputThroughSerial();
     TFTOutput();
 }
 
@@ -145,7 +145,7 @@ void SensorsTab::OutputThroughSerial()
     Serial.print(" m");
     Serial.print(" Temperature: ");
     Serial.print(GetTemperature());
-    Serial.print("°C ");
+    Serial.println("°C ");
     //Serial.print(" CO PPM: ");
     //Serial.println(GetCO());
 

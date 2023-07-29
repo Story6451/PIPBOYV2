@@ -11,6 +11,8 @@ class ConfigData
         uint8_t Volume;
         uint8_t Height;
         uint32_t Mass;
+        int32_t encoderValue = 0;
+        //int32_t prevEncoderValue;
         //const byte TotalAdjustableValues = 3;
 
         bool Locked;

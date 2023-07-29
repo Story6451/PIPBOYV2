@@ -31,9 +31,16 @@ Tab* Tabs[5];
 
 uint32_t Tab::Total = -1;
 
+//encoder variables
+uint8_t currentCLK;
+uint8_t lastCLK;
+uint32_t prevEncoderValue = 0;
+bool increment = false;
+bool decrement = false;
+
 //button pins
-const uint32_t BTN_1_PIN = 5;//refreshing button
-const uint32_t BTN_2_PIN = 7;//locking button
+const uint32_t REFRESH_BTN_PIN = 19;//refreshing button
+const uint32_t LOCK_BTN_PIN = 18;//locking button
 
 //led pins (all unused)
 const uint32_t LED_1_PIN = 6; 
@@ -44,7 +51,7 @@ int32_t val1 = 0;
 int32_t val2 = 0;
 
 bool locked = false;
-int32_t prevBtnState1 = LOW;
+int32_t prevBtnState = LOW;
 int32_t oldIndex = 0;
 int32_t index = 0;
 int32_t prevPipColour;
@@ -115,10 +122,11 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
   //encoder setup
   pinMode(pipData.ENCODER_CLK, INPUT);
   pinMode(pipData.ENCODER_DT, INPUT);
+  lastCLK = digitalRead(pipData.ENCODER_CLK);
 
   //Button inputs
-  pinMode(BTN_1_PIN, INPUT); 
-  pinMode(BTN_2_PIN, INPUT);
+  pinMode(REFRESH_BTN_PIN, INPUT); 
+  pinMode(LOCK_BTN_PIN, INPUT);
   pinMode(pipData.BTN_3_PIN, INPUT);
   tft.println("Buttons connected");
   Serial.println("Buttons connected");
@@ -260,6 +268,51 @@ void GetSettings()
   }
 }
 
+void ISR_refresh_button()
+{
+  int btnState = digitalRead(REFRESH_BTN_PIN); //restarts the current module
+  if (btnState == HIGH)
+  {
+    DrawMenuCursur(index, oldIndex);
+    Tabs[index]->Setup();
+  } 
+}
+
+void ISR_lock_button()
+{
+  int btnState = digitalRead(LOCK_BTN_PIN); //locks the screen preventing the us from changing tab
+  if (btnState != prevBtnState) //checks to see if the btn has been pressed
+  {
+    if (btnState == HIGH)
+    {
+      pipData.Locked = !pipData.Locked;
+    }
+    
+    prevBtnState = btnState;
+  }
+  increment = false;
+  decrement = false;
+}
+
+void ISR_encoder()
+{
+  currentCLK = digitalRead(pipData.ENCODER_CLK);
+  if ((currentCLK != lastCLK) && (currentCLK == 1))
+  {
+    if (digitalRead(pipData.ENCODER_DT) != currentCLK)
+    {
+      pipData.encoderValue++;
+      increment = true;
+    }
+    else
+    {
+      pipData.encoderValue--;
+      decrement = true;
+    }
+  }
+  lastCLK = currentCLK;
+}
+
 void setup() 
 {
   //serial setup
@@ -269,44 +322,37 @@ void setup()
   PeripheralSetup();
   GetSettings();
   DrawTabs();
+
+  attachInterrupt(digitalPinToInterrupt(REFRESH_BTN_PIN), ISR_refresh_button, RISING);
+  attachInterrupt(digitalPinToInterrupt(LOCK_BTN_PIN), ISR_lock_button, RISING);
+  attachInterrupt(digitalPinToInterrupt(pipData.ENCODER_DT), ISR_encoder, CHANGE);
 }
 
-int counter = 0;
+
 void loop() 
 {
-  //Serial.println(analogRead(A15));
-
   tft.setTextColor(pipData.ActiveColour, BLACK);
-
-  int btnState1 = digitalRead(BTN_1_PIN); //locks the screen preventing the us from changing tab
-  if (btnState1 != prevBtnState1) //checks to see if the btn has been pressed
-  {
-    if (btnState1 == HIGH)
-    {
-      pipData.Locked = !pipData.Locked;
-    }
-    
-    prevBtnState1 = btnState1;
-  }
-  
-
-
-  int btnState2 = digitalRead(BTN_2_PIN); //restarts the current module
-  if (btnState2 == HIGH)
-  {
-    DrawMenuCursur(index, oldIndex);
-    Tabs[index]->Setup();
-  } 
 
   if (pipData.Locked == false) //main routine for running through the tabs loop
   {
+    if ((pipData.encoderValue > prevEncoderValue) || (increment == true))
+    {
+      index++;
+      increment = false;
+    }
+    else if ((pipData.encoderValue < prevEncoderValue) || (decrement == true))
+    {
+      index--;
+      decrement = false;
+    }
 
-    val1 = analogRead(pipData.POT_1_PIN);
-    
-    index = val1/incrementalStep;
     if (index > Tab::Total) //sets index = to the current value of the horozontal potentiometer
     {
       index = Tab::Total;
+    }
+    if (index < 0)
+    {
+      index = 0;
     }
 
     if (index == oldIndex)
@@ -340,5 +386,6 @@ void loop()
   }
 
   prevPipColour = pipData.ActiveColour;
+  prevEncoderValue = pipData.encoderValue;
 }
 
