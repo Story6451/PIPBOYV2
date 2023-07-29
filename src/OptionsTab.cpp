@@ -135,10 +135,12 @@ void OptionsTab::SaveSettings()
 
     if (SD.exists("config.txt"))
     {
+        //Serial.println("File exists");
         SD.remove("config.txt");
         File file = SD.open("config.txt", FILE_WRITE);
         if (file)
         {
+            file.print(dataToBeSaved);
             file.close();
         }
     }
