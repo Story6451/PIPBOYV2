@@ -11,27 +11,21 @@ class GPSTab : public Tab
 	const double maxLat = 89.99999;
 	const uint16_t MapWidth = 459;
 	const uint16_t MapHeight = 239;
-	const uint16_t XOffset = 10;
-	const uint16_t YOffset = 61;
+	const uint16_t XOffset = 10;//10
+	const uint16_t YOffset = 61;//61
+	const int16_t xCursurOffset = -4;
+	const int16_t yCursurOffset = -3;
   	double latitude;
   	double longitude;
   	int8_t satellites;
-  	float velocity;
-  	uint8_t hours;
-	uint8_t minutes;
-	uint8_t seconds;
-  	uint16_t year;
-	uint8_t month;
-	uint8_t day;
 	uint16_t altitude;
-	double xPos;
-	double yPos;
 	int16_t xScreenPos;
 	int16_t yScreenPos;
 	int16_t oldXScreenPos;
 	int16_t oldYScreenPos;
-	const int16_t offset = 61; //distance from tabs
 	uint64_t timer;
+
+	bool prevLockedState;
 	
   public:
   	GPSTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData);
