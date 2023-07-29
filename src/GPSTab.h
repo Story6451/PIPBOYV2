@@ -9,14 +9,21 @@ class GPSTab : public Tab
 	const double scalingFactor = 1*pow(10, 6);
 	const double maxLatRad = 1.570796309;//89.999999(degrees) needs to be 1 more 9 than there are significant 0s
 	const double maxLat = 89.99999;
-	const uint16_t MapWidth = 459;
-	const uint16_t MapHeight = 239;
+	const uint16_t WorldMapWidth = 459;
+	const uint16_t WorldMapHeight = 239;
+	const uint16_t AfricaMapWidth = 231;
+	const uint16_t AfricaMapHeight = 239;
+	const uint16_t EuropeMapWidth = 480;
+	const uint16_t EuropeMapHeight = 239;
 	const uint16_t XOffset = 10;//10
 	const uint16_t YOffset = 61;//61
-	const int16_t xCursurOffset = -4;
-	const int16_t yCursurOffset = -3;
+	const int16_t xCursurOffset = -10; //-6 - an amount
+	const int16_t yCursurOffset = -9;
+	const uint8_t numberOfMaps = 7;
   	double latitude;
   	double longitude;
+	uint8_t verticalIndex = 0;
+	uint8_t oldIndex = 0;
   	int8_t satellites;
 	uint16_t altitude;
 	int16_t xScreenPos;
@@ -24,7 +31,6 @@ class GPSTab : public Tab
 	int16_t oldXScreenPos;
 	int16_t oldYScreenPos;
 	uint64_t timer;
-
 	bool prevLockedState;
 	
   public:
@@ -49,4 +55,5 @@ class GPSTab : public Tab
 	void OutputThroughSerial();
 	void TFTOutput();
 	void TFTDrawOptions();
+	void TFTDrawMap();
 };

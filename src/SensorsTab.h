@@ -16,7 +16,7 @@ class SensorsTab : public Tab //get sensors array
   public:  
 
    	SensorsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData);
-	String ModuleName(){return "ENVIRO";}
+	String ModuleName(){return "DATA";}
   	void Setup();
   	void Loop();
     String GetDateTime(); //gets the time, date and arporiatly formats it before displaying it 

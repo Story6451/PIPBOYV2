@@ -31,8 +31,8 @@ void GPSTab::Setup()
     oldYScreenPos = 0;
     prevLockedState = pPIPDATA->Locked;
     timer = 0;
-
-    pTFT->drawBitmap(XOffset, YOffset, WorldMap2, MapWidth, MapHeight, pPIPDATA->ActiveColour);
+    verticalIndex = 0;
+    oldIndex = 0;
 }
 
 void GPSTab::Loop()
@@ -122,6 +122,7 @@ void GPSTab::Loop()
         }
         else
         {
+            verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*numberOfMaps)/1023);
             TFTDrawOptions();
         }
     }
@@ -146,6 +147,14 @@ void GPSTab::TFTDrawOptions()
     pTFT->setCursor(20, 267);
     pTFT->print("South America");
 
+
+    if (verticalIndex != oldIndex)
+    {
+        pTFT->drawRect(10, oldIndex * 220/numberOfMaps + 70, 320, 30, BLACK);
+        oldIndex = verticalIndex;
+        
+    }
+    pTFT->drawRect(10, verticalIndex * 220/numberOfMaps + 70, 320, 30, pPIPDATA->ActiveColour);
 
 }
 
@@ -180,22 +189,22 @@ double GPSTab::MercRadToLat(double mercRad)
 double GPSTab::MercLatToYPos(double lat)
 {
     double mercRad = RadToMercRadians((lat * PI/180));
-    return ((double)MapHeight/2)-((double)MapWidth * mercRad/(2 * PI));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
+    return ((double)WorldMapHeight/2)-((double)WorldMapWidth * mercRad/(2 * PI));//239 being 320 - 61(offset from tabs) - 20(offset from displayed gps data at bottom)
 }
 
 double GPSTab::MercLonToXPos(double lon, double lat)
 {
-    return (lon + 180) * ((double)MapWidth/360); 
+    return (lon + 180) * ((double)WorldMapWidth/360); 
 }
 
 double GPSTab::EquirectangularLongToXPos(double lon, double lat)
 {
-    return ((double)MapWidth/360) * (lon + 180);
+    return ((double)WorldMapWidth/360) * (lon + 180);
 }
 
 double GPSTab::EquirectangularLatToYPos(double lat)
 {
-    return (double)MapHeight-((lat + 90) * (double)MapHeight/180);
+    return (double)WorldMapHeight-((lat + 90) * (double)WorldMapHeight/180);
 }
 
 void GPSTab::OutputThroughSerial()
@@ -212,15 +221,14 @@ void GPSTab::TFTOutput()
 {
     if ((oldXScreenPos != xScreenPos) || (oldYScreenPos != yScreenPos))
     {
-        pTFT->fillRect(oldXScreenPos + XOffset - 6, oldYScreenPos + YOffset - 6, 12, 12, BLACK);
+        pTFT->fillRect(oldXScreenPos + XOffset + xCursurOffset, oldYScreenPos + YOffset + yCursurOffset, 12, 12, BLACK);
 
 
         oldXScreenPos = xScreenPos;
         oldYScreenPos = yScreenPos;
     }
     
-    pTFT->drawBitmap(XOffset, YOffset, WorldMap2, MapWidth, MapHeight, pPIPDATA->ActiveColour);
-    pTFT->drawBitmap(xScreenPos + XOffset + xCursurOffset - 6, yScreenPos + YOffset + yCursurOffset - 6, CrossHair, 12, 12, 0xFFFF);
+    pTFT->drawBitmap(xScreenPos + XOffset + xCursurOffset, yScreenPos + YOffset + yCursurOffset, CrossHair, 12, 12, 0xFFFF);
 
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
     pTFT->setCursor(10, 300);
@@ -230,4 +238,17 @@ void GPSTab::TFTOutput()
     pTFT->print(" Altitude: "); pTFT->print(altitude, 2); 
     pTFT->print(" Satellites: "); pTFT->print(satellites); pTFT->print(" ");
 
+}
+
+void GPSTab::TFTDrawMap()
+{
+    switch (verticalIndex)
+    {
+        case 1:
+            /* code */
+            break;
+        default:
+            pTFT->drawBitmap(XOffset, YOffset, WorldMap, WorldMapWidth, WorldMapHeight, pPIPDATA->ActiveColour);
+            break;
+    }
 }
