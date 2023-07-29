@@ -54,4 +54,5 @@ class GPSTab : public Tab
 	double EquirectangularLongToXPos(double lon, double lat);
 	void OutputThroughSerial();
 	void TFTOutput();
+	void TFTDrawOptions();
 };

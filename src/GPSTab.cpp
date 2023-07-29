@@ -48,83 +48,96 @@ void GPSTab::Loop()
 {
     if ((millis() - timer) > 500)
     {
-        ss.begin(GPSBaud);
-        timer = millis();
-        if (gps.charsProcessed() > 0)
+        if (pPIPDATA->Locked == false)
         {
 
-            //if (gps.satellites.isValid())
+            ss.begin(GPSBaud);
+            timer = millis();
+            if (gps.charsProcessed() > 0)
             {
-                satellites = gps.satellites.value();
-            }
-            //GPSDelay(0);
 
-            //if (gps.altitude.isValid())
-            {
-                altitude = gps.altitude.meters();
-            }
-            //GPSDelay(0);
-
-            if (gps.location.isValid())
-            {
-                latitude = gps.location.lat();
-                longitude = gps.location.lng();
-            }
-            //GPSDelay(0);
-
-            double correctedLat = latitude;
-            if (abs(latitude) > maxLat)
-            {
-                correctedLat = maxLat;
-                if (latitude < 0)
+                //if (gps.satellites.isValid())
                 {
-                    correctedLat = -latitude;
+                    satellites = gps.satellites.value();
+                }
+                //GPSDelay(0);
+
+                //if (gps.altitude.isValid())
+                {
+                    altitude = gps.altitude.meters();
+                }
+                //GPSDelay(0);
+
+                if (gps.location.isValid())
+                {
+                    latitude = gps.location.lat();
+                    longitude = gps.location.lng();
+                }
+                //GPSDelay(0);
+
+                double correctedLat = latitude;
+                if (abs(latitude) > maxLat)
+                {
+                    correctedLat = maxLat;
+                    if (latitude < 0)
+                    {
+                        correctedLat = -latitude;
+                    }
+
                 }
 
+                //calculate screen position
+                ///*SUDAN 16.465764445765306, 29.54627685797427
+                //correctedLat = 16.465764445765306;
+                //longitude = 29.54627685797427;
+                
+                ///*JAPAN 36.54343554246808, 139.25918808522488
+                //correctedLat = 36.54343554246808;
+                //longitude = 139.25918808522488;
+                
+                //NEW ZEALAND -42.088667969077676, 172.22672190419098
+                //correctedLat = -42.088667969077676;
+                //longitude = 172.22672190419098;
+                
+                ///*CANADA 58.231708432811345, -101.43666168828908
+                //correctedLat = 58.231708432811345;
+                //longitude = -101.43666168828908;
+                
+                //CHILE -26.505485584708655, -69.43743084284017
+                //correctedLat = -26.505485584708655;
+                //longitude = -69.43743084284017;
+                
+                //yScreenPos = MercLatToYPos(correctedLat);
+                //xScreenPos = MercLonToXPos(longitude, correctedLat);
+                xScreenPos = EquirectangularLongToXPos(longitude, correctedLat);
+                yScreenPos = EquirectangularLatToYPos(correctedLat);
+                //OutputThroughSerial();
+                TFTOutput();
             }
+            else
+            {
+                Serial.println("Waiting for gps data!");
+                pTFT->setCursor(90, 130);
+                pTFT->setTextSize(3);
+                pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
+                pTFT->print("Waiting for gps data!");
+                pTFT->fillRect(0, 61, 480, 259, BLACK);
+            }
+            GPSDelay(50);
 
-            //calculate screen position
-            ///*SUDAN 16.465764445765306, 29.54627685797427
-            //correctedLat = 16.465764445765306;
-            //longitude = 29.54627685797427;
-            
-            ///*JAPAN 36.54343554246808, 139.25918808522488
-            //correctedLat = 36.54343554246808;
-            //longitude = 139.25918808522488;
-            
-            //NEW ZEALAND -42.088667969077676, 172.22672190419098
-            //correctedLat = -42.088667969077676;
-            //longitude = 172.22672190419098;
-            
-            ///*CANADA 58.231708432811345, -101.43666168828908
-            //correctedLat = 58.231708432811345;
-            //longitude = -101.43666168828908;
-            
-            //CHILE -26.505485584708655, -69.43743084284017
-            //correctedLat = -26.505485584708655;
-            //longitude = -69.43743084284017;
-            
-            //yScreenPos = MercLatToYPos(correctedLat);
-            //xScreenPos = MercLonToXPos(longitude, correctedLat);
-            xScreenPos = EquirectangularLongToXPos(longitude, correctedLat);
-            yScreenPos = EquirectangularLatToYPos(correctedLat);
-            //OutputThroughSerial();
-            TFTOutput();
+            ss.end();
         }
         else
         {
-            Serial.println("Waiting for gps data!");
-            pTFT->setCursor(90, 130);
-            pTFT->setTextSize(3);
-            pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
-            pTFT->print("Waiting for gps data!");
-            pTFT->fillRect(0, 61, 480, 259, BLACK);
-        }
-        GPSDelay(50);
 
-        ss.end();
+            //pTFT->fillRect();
+        }
     }
-    
+}
+
+void GPSTab::TFTDrawOptions()
+{
+
 }
 
 void GPSTab::GPSDelay(uint64_t diff)
