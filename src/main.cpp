@@ -99,30 +99,32 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
   //Sd card setup
   if (card.init(SPI_HALF_SPEED, chipSelect))
   {
-    tft.println("SD card 1 initialisation success");
-    Serial.println("SD card 1 initialisation success");
+    tft.println("SD card test 1 success");
+    Serial.println("SD card test 1 success");
   }
   else
   {
-    tft.println("SD card 1 initialisation failed");
-    Serial.println("SD card 1 initialisation failed");
+    tft.println("SD card test 1 failed");
+    Serial.println("SD card test 1 failed");
   }
 
   if (SD.begin(chipSelect))
   {
-    tft.println("SD card 2 initialisation success");
-    Serial.println("SD card 2 initialisation success");
+    tft.println("SD card test 2 success");
+    Serial.println("SD card test 2 success");
   }
   else
   {
-    tft.println("SD card 2 initialisation failed");
-    Serial.println("SD card 2 initialisation failed");
+    tft.println("SD card test 2 failed");
+    Serial.println("SD card test 2 failed");
   }
 
   //encoder setup
   pinMode(pipData.ENCODER_CLK, INPUT);
   pinMode(pipData.ENCODER_DT, INPUT);
   lastCLK = digitalRead(pipData.ENCODER_CLK);
+  tft.println("Encoder connected");
+  Serial.println("Encoder connected");
 
   //Button inputs
   pinMode(REFRESH_BTN_PIN, INPUT); 
