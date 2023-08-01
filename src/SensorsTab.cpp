@@ -170,6 +170,5 @@ void SensorsTab::TFTOutput()
     //displays temperature
     pTFT->print("  Temperature: "); pTFT->print(GetTemperature()); pTFT->println(" 'C "); 
     
-    //displays carbon monoxide levels
-    //pTFT->print("  CO PPM: "); pTFT->print(GetCO());
+    Serial.println("Testing data tab");
 }

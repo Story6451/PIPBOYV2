@@ -238,7 +238,7 @@ void GPSTab::TFTOutput()
     pTFT->print(" Longitude: "); pTFT->print(longitude, 6); 
     pTFT->print(" Altitude: "); pTFT->print(altitude, 2); 
     pTFT->print(" Satellites: "); pTFT->print(satellites); pTFT->print(" ");
-
+    Serial.println("Testing maps tab");
 }
 
 void GPSTab::TFTDrawMap()

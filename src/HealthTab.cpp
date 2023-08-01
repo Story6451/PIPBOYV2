@@ -197,6 +197,7 @@ void HealthTab::TFTOutput()
 
         pTFT->drawFastVLine(step, (320 - map(rawVal, 0, 1023, 0, 140)), map(rawVal, 0, 1023, 0, 140), pPIPDATA->ActiveColour);
         step++;
+        Serial.println("Testing stats tab");
     }
 
 
