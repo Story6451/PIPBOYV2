@@ -67,13 +67,14 @@ void SerialSetupLogger() //logs tft info to the serial monitor
 {
   Serial.println("Hello, world!");
 
+  tft.reset();
   if (tft.readID() == 0x8357)
   {
     Serial.println("Found LCD");
   }
   else 
   {
-    Serial.print("Could not find LCD Instead found tft with identifier: "); Serial.println(tft.readID());
+    Serial.print("Could not find LCD Instead found display with identifier: "); Serial.println(tft.readID());
   }
   
   //screen information
@@ -86,7 +87,7 @@ void SerialSetupLogger() //logs tft info to the serial monitor
 void PeripheralSetup() //initialises the external hardware and logs it to the tft and console
 {
   //tft setup
-  tft.reset();
+  delay(100);
   tft.begin(tft.readID());
   tft.fillScreen(BLACK);
   tft.setTextSize(2);
