@@ -8,40 +8,40 @@ class GPSTab : public Tab
   private:
 	const double scalingFactor = 1*pow(10, 6);
 	const double maxLatRad = 1.570796309;//89.999999(degrees) needs to be 1 more 9 than there are significant 0s
-	const double maxLat = 89.99999;
+	const double maxMercLat = 89.99999;
 	const uint16_t YOffset = 61;//61
 
-	const uint16_t WorldMapWidth = 480;
-	const uint16_t WorldMapHeight = 239;
-	const uint16_t WorldMapXOffset = 0;//10
+	const uint16_t worldMapWidth = 480;
+	const uint16_t worldMapHeight = 239;
+	const uint16_t worldMapXOffset = 0;
 
-	const uint16_t AfricaMapWidth = 250;
-	const uint16_t AfricaMapHeight = 239;
-	const uint16_t AfricaMapXOffset = 115;
+	const uint16_t euMapWidth = 480;
+	const uint16_t euMapHeight = 239;
+	const uint16_t euMapXOffset = 0;
+	const double euMaxLat = 71;
+	const double euMinLat = 33;
+	const double euMaxLong = 66;
+	const double euMinLong = -26;
 
-	const uint16_t AsiaMapWidth = 400;
-	const uint16_t AsiaMapHeight = 239;
-	const uint16_t AsiaMapXOffset = 40;
+	const uint16_t brMapWidth = 160;
+	const uint16_t brMapHeight = 239;
+	const uint16_t brMapXOffset = 160;
+	const double brMaxLat = 61;
+	const double brMinLat = 50;
+	const double brMaxLong = 3;
+	const double brMinLong = -11;
 
-	const uint16_t AustraliaMapWidth = 380;
-	const uint16_t AustraliaMapHeight = 239;
-	const uint16_t AustraliaMapXOffset = 0;
-
-	const uint16_t EuropeMapWidth = 480;
-	const uint16_t EuropeMapHeight = 239;
-	const uint16_t EuropeMapXOffset = 0;
-
-	const uint16_t NorthAmericaMapWidth = 480;
-	const uint16_t NorthAmericaHeight = 239;
-	const uint16_t NorthAmericaMapXOffset = 0;
-
-	const uint16_t SouthAmericaMapWidth = 230;
-	const uint16_t SouthAmericaMapHeight = 239;
-	const uint16_t SouthAmericaMapXOffset = 0;
+	uint16_t mapWidth;
+	uint16_t mapOffset;
+	double maxLat;
+	double minLat;
+	double maxLong;
+	double minLong;
 
 	const int16_t xCursurOffset = -3; //-6 - an amount
 	const int16_t yCursurOffset = -9;
-	const uint8_t numberOfMaps = 7;
+	const uint8_t numberOfMaps = 3;
+
   	double latitude;
   	double longitude;
 	uint8_t verticalIndex = 0;
