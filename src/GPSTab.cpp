@@ -97,8 +97,8 @@ void GPSTab::Loop()
                 //longitude = -101.43666168828908;
                 
                 //CHILE -26.505485584708655, -69.43743084284017
-                correctedLat = -26.505485584708655;
-                longitude = -69.43743084284017;
+                //correctedLat = -26.505485584708655;
+                //longitude = -69.43743084284017;
                 
                 //yScreenPos = MercLatToYPos(correctedLat);
                 //xScreenPos = MercLonToXPos(longitude, correctedLat);
@@ -221,7 +221,7 @@ void GPSTab::TFTOutput()
 {
     if ((oldXScreenPos != xScreenPos) || (oldYScreenPos != yScreenPos))
     {
-        pTFT->fillRect(oldXScreenPos + XOffset + xCursurOffset, oldYScreenPos + YOffset + yCursurOffset, 12, 12, BLACK);
+        pTFT->fillRect(xScreenPos + xCursurOffset, oldYScreenPos + YOffset + yCursurOffset, 12, 12, BLACK);
 
 
         oldXScreenPos = xScreenPos;
@@ -229,7 +229,7 @@ void GPSTab::TFTOutput()
     }
     TFTDrawMap();
     
-    pTFT->drawBitmap(xScreenPos + XOffset + xCursurOffset, yScreenPos + YOffset + yCursurOffset, CrossHair, 12, 12, 0xFFFF);
+    pTFT->drawBitmap(xScreenPos + xCursurOffset, yScreenPos + YOffset + yCursurOffset, CrossHair, 12, 12, 0xFFFF);
 
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
     pTFT->setCursor(10, 300);
@@ -243,28 +243,30 @@ void GPSTab::TFTOutput()
 
 void GPSTab::TFTDrawMap()
 {
+    
     switch (verticalIndex)
     {
         case 1:
-            pTFT->drawBitmap(XOffset, YOffset, AfricaMap, AfricaMapWidth, AfricaMapHeight, pPIPDATA->ActiveColour);
+            pTFT->drawBitmap(AfricaMapXOffset, YOffset, AfricaMap, AfricaMapWidth, AfricaMapHeight, pPIPDATA->ActiveColour);
             break;
         case 2:
-            pTFT->drawBitmap(XOffset, YOffset, AsiaMap, AsiaMapWidth, AsiaMapHeight, pPIPDATA->ActiveColour);
+            pTFT->drawBitmap(AfricaMapXOffset, YOffset, AsiaMap, AsiaMapWidth, AsiaMapHeight, pPIPDATA->ActiveColour);
             break;
         case 3:
-            pTFT->drawBitmap(XOffset, YOffset, AustraliaMap, AustraliaMapWidth, AustraliaMapHeight, pPIPDATA->ActiveColour);
+            pTFT->drawBitmap(AustraliaMapXOffset, YOffset, AustraliaMap, AustraliaMapWidth, AustraliaMapHeight, pPIPDATA->ActiveColour);
             break;
         case 4:
-            pTFT->drawBitmap(XOffset, YOffset, EuropeMap, EuropeMapWidth, EuropeMapHeight, pPIPDATA->ActiveColour);
+            pTFT->drawBitmap(EuropeMapXOffset, YOffset, EuropeMap, EuropeMapWidth, EuropeMapHeight, pPIPDATA->ActiveColour);
             break;
         case 5:
-            pTFT->drawBitmap(XOffset, YOffset, NorthAmericaMap, NorthAmericaMapWidth, NorthAmericaHeight, pPIPDATA->ActiveColour);
+            pTFT->drawBitmap(NorthAmericaMapXOffset, YOffset, NorthAmericaMap, NorthAmericaMapWidth, NorthAmericaHeight, pPIPDATA->ActiveColour);
             break;
         case 6:
-            pTFT->drawBitmap(XOffset, YOffset, SouthAmericaMap, SouthAmericaMapWidth, SouthAmericaMapHeight, pPIPDATA->ActiveColour);
+            pTFT->drawBitmap(SouthAmericaMapXOffset, YOffset, SouthAmericaMap, SouthAmericaMapWidth, SouthAmericaMapHeight, pPIPDATA->ActiveColour);
             break;
         default:
-            pTFT->drawBitmap(XOffset, YOffset, WorldMap, WorldMapWidth, WorldMapHeight, pPIPDATA->ActiveColour);
+            pTFT->drawBitmap(WorldMapXOffset, YOffset, WorldMap2, WorldMapWidth, WorldMapHeight, pPIPDATA->ActiveColour);
             break;
     }
+    
 }
