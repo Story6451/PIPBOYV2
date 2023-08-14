@@ -23,13 +23,13 @@ class GPSTab : public Tab
 	const double euMaxLong = 66;
 	const double euMinLong = -26;
 
-	const uint16_t brMapWidth = 160;
+	const uint16_t brMapWidth = 480;
 	const uint16_t brMapHeight = 239;
-	const uint16_t brMapXOffset = 160;
+	const uint16_t brMapXOffset = 0;
 	const double brMaxLat = 61;
-	const double brMinLat = 50;
-	const double brMaxLong = 3;
-	const double brMinLong = -11;
+	const double brMinLat = 49.72;
+	const double brMaxLong = 8.3;
+	const double brMinLong = -15.26;
 
 	uint16_t mapWidth;
 	uint16_t mapOffset;
