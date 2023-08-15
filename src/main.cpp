@@ -305,21 +305,24 @@ void ISR_lock_button()
 
 void ISR_encoder_a()
 {
-  currentACLK = digitalRead(pipData.ENCODER_A_CLK);
-  if ((currentACLK != lastACLK) && (currentACLK == 1))
+  if (pipData.Locked == false)
   {
-    if (digitalRead(pipData.ENCODER_A_DT) != currentACLK)
+    currentACLK = digitalRead(pipData.ENCODER_A_CLK);
+    if ((currentACLK != lastACLK) && (currentACLK == 1))
     {
-      pipData.encoderAValue--;
-      decrement = true;
+      if (digitalRead(pipData.ENCODER_A_DT) != currentACLK)
+      {
+        pipData.encoderAValue--;
+        decrement = true;
+      }
+      else
+      {
+        pipData.encoderAValue++;
+        increment = true;
+      }
     }
-    else
-    {
-      pipData.encoderAValue++;
-      increment = true;
-    }
+    lastACLK = currentACLK;
   }
-  lastACLK = currentACLK;
 }
 
 void ISR_encoder_b()
@@ -362,12 +365,16 @@ void loop()
 
   if (pipData.Locked == false) //main routine for running through the tabs loop
   {
-    if ((pipData.encoderAValue > prevEncoderAValue) || (increment == true))
+
+    Serial.print("  encoder value: "); Serial.print(pipData.encoderAValue); Serial.print("   ");
+    Serial.print("  prev encoder value: "); Serial.print(prevEncoderAValue); Serial.print("   ");
+    Serial.print("  Index: "); Serial.print(index); Serial.println("   ");
+    if ((increment == true))
     {
       index++;
       increment = false;
     }
-    else if ((pipData.encoderAValue < prevEncoderAValue) || (decrement == true))
+    else if ((decrement == true))
     {
       index--;
       decrement = false;
@@ -377,7 +384,7 @@ void loop()
     {
       index = Tab::Total;
     }
-    if (index < 0)
+    else if (index < 0)
     {
       index = 0;
     }
@@ -393,15 +400,17 @@ void loop()
     }
 
     oldIndex = index;
-    tft.setCursor(0, 302); 
-    tft.setTextSize(2);
-    tft.print(" ");
+    //tft.setCursor(0, 302); 
+    //tft.setTextSize(2);
+    //tft.print(" ");
+    tft.drawRect(0, 61, 480, 259, BLACK);
   }
   else
   {
-    tft.setCursor(0, 302); 
-    tft.setTextSize(2);
-    tft.print("L");
+    //tft.setCursor(0, 302); 
+    //tft.setTextSize(2);
+    //tft.print("L");
+    tft.drawRect(0, 61, 480, 259, pipData.ActiveColour);
     Tabs[index]->Loop();
   }
 
