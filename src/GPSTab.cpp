@@ -122,13 +122,14 @@ void GPSTab::Loop()
                 xScreenPos = (double)mapOffset + (double)mapWidth * (double)(posX - minX)/(maxX - minX);
                 yScreenPos = (double)worldMapHeight - (double)worldMapHeight * (double)(posY - minY)/(maxY - minY);
                 
+                /*
                 Serial.print("minlat, maxlat: "); Serial.print(minLat); Serial.print(" "); Serial.println(maxLat);
                 Serial.print("minlong, maxlong: "); Serial.print(minLong); Serial.print(" "); Serial.println(maxLong);
                 Serial.print("miny, maxy: "); Serial.print(minY); Serial.print(" "); Serial.println(maxY);
                 Serial.print("minx, maxx: "); Serial.print(minX); Serial.print(" "); Serial.println(maxX);
                 Serial.print("posy, yscreenpos "); Serial.print(posY); Serial.print(" "); Serial.println(yScreenPos);
                 Serial.print("posx, xscreenpos "); Serial.print(posX); Serial.print(" "); Serial.println(xScreenPos);
-                
+                */
                 //OutputThroughSerial();
                 TFTOutput();
             }
