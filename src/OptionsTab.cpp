@@ -42,7 +42,7 @@ void OptionsTab::Loop()
     if (pPIPDATA->Locked == true)
     {
         verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*3)/1023);
-        horozontalIndex = pPIPDATA->encoderValue;
+        horozontalIndex = pPIPDATA->encoderAValue;
 
         switch (verticalIndex)
         {

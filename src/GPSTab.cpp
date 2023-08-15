@@ -31,8 +31,8 @@ void GPSTab::Setup()
     oldYScreenPos = 0;
     prevLockedState = pPIPDATA->Locked;
     timer = 0;
-    verticalIndex = 0;
-    oldIndex = 0;
+    //verticalIndex = 0;
+    //oldIndex = 0;
     mapWidth = 0;
 	mapOffset = 0;
 	maxLat = 0;
@@ -113,21 +113,22 @@ void GPSTab::Loop()
                 
                 //yScreenPos = MercLatToYPos(correctedLat);
                 //xScreenPos = MercLonToXPos(longitude, correctedLat);
-                uint16_t posX = EquirectangularLongToXPos(longitude, correctedLat);
-                uint16_t posY = EquirectangularLatToYPos(correctedLat);
-                uint16_t minX = EquirectangularLongToXPos(minLong, minLat);
-                uint16_t minY = EquirectangularLatToYPos(minLat);
-                uint16_t maxX = EquirectangularLongToXPos(maxLong, maxLat);
-                uint16_t maxY = EquirectangularLatToYPos(maxLat);
+                uint16_t posX = EquirectangularXPos(longitude, correctedLat);
+                uint16_t posY = EquirectangularYPos(correctedLat);
+                uint16_t minX = EquirectangularXPos(minLong, minLat);
+                uint16_t minY = EquirectangularYPos(minLat);
+                uint16_t maxX = EquirectangularXPos(maxLong, maxLat);
+                uint16_t maxY = EquirectangularYPos(maxLat);
                 xScreenPos = (double)mapOffset + (double)mapWidth * (double)(posX - minX)/(maxX - minX);
                 yScreenPos = (double)worldMapHeight - (double)worldMapHeight * (double)(posY - minY)/(maxY - minY);
-                /*
+                
                 Serial.print("minlat, maxlat: "); Serial.print(minLat); Serial.print(" "); Serial.println(maxLat);
+                Serial.print("minlong, maxlong: "); Serial.print(minLong); Serial.print(" "); Serial.println(maxLong);
                 Serial.print("miny, maxy: "); Serial.print(minY); Serial.print(" "); Serial.println(maxY);
                 Serial.print("minx, maxx: "); Serial.print(minX); Serial.print(" "); Serial.println(maxX);
                 Serial.print("posy, yscreenpos "); Serial.print(posY); Serial.print(" "); Serial.println(yScreenPos);
                 Serial.print("posx, xscreenpos "); Serial.print(posX); Serial.print(" "); Serial.println(xScreenPos);
-                */
+                
                 //OutputThroughSerial();
                 TFTOutput();
             }
@@ -211,12 +212,12 @@ double GPSTab::MercLonToXPos(double lon, double lat)
     return (lon + 180) * ((double)mapWidth/360); 
 }
 
-double GPSTab::EquirectangularLongToXPos(double lon, double lat)
+double GPSTab::EquirectangularXPos(double lon, double lat)
 {
     return ((double)mapWidth/360) * (lon + 180);
 }
 
-double GPSTab::EquirectangularLatToYPos(double lat)
+double GPSTab::EquirectangularYPos(double lat)
 {
     return ((lat + 90) * (double)worldMapHeight/180);
 }
@@ -235,7 +236,7 @@ void GPSTab::TFTOutput()
 {
     if ((oldXScreenPos != xScreenPos) || (oldYScreenPos != yScreenPos))
     {
-        pTFT->fillRect(xScreenPos + xCursurOffset, oldYScreenPos + YOffset + yCursurOffset, 12, 12, BLACK);
+        pTFT->fillRect(oldXScreenPos + xCursurOffset, oldYScreenPos + YOffset + yCursurOffset, 12, 12, BLACK);
 
         TFTDrawMap();
 

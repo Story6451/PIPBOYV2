@@ -32,9 +32,13 @@ Tab* Tabs[5];
 uint32_t Tab::Total = -1;
 
 //encoder variables
-uint8_t currentCLK;
-uint8_t lastCLK;
-uint32_t prevEncoderValue = 0;
+uint8_t currentACLK;
+uint8_t lastACLK;
+uint32_t prevEncoderAValue = 0;
+uint8_t currentBCLK;
+uint8_t lastBCLK;
+uint32_t prevEncoderBValue = 0;
+
 bool increment = false;
 bool decrement = false;
 
@@ -120,12 +124,14 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
     Serial.println("SD card test 2 failed");
   }
 
-  //encoder setup
-  pinMode(pipData.ENCODER_CLK, INPUT);
-  pinMode(pipData.ENCODER_DT, INPUT);
-  lastCLK = digitalRead(pipData.ENCODER_CLK);
-  tft.println("Encoder connected");
-  Serial.println("Encoder connected");
+  //digital encoders setup
+  pinMode(pipData.ENCODER_A_CLK, INPUT);
+  pinMode(pipData.ENCODER_A_DT, INPUT);
+  pinMode(pipData.ENCODER_B_CLK, INPUT);
+  pinMode(pipData.ENCODER_B_DT, INPUT);
+  lastACLK = digitalRead(pipData.ENCODER_A_CLK);
+  tft.println("Encoder A connected");
+  Serial.println("Encoder A connected");
 
   //Button inputs
   pinMode(REFRESH_BTN_PIN, INPUT); 
@@ -297,23 +303,40 @@ void ISR_lock_button()
   decrement = false;
 }
 
-void ISR_encoder()
+void ISR_encoder_a()
 {
-  currentCLK = digitalRead(pipData.ENCODER_CLK);
-  if ((currentCLK != lastCLK) && (currentCLK == 1))
+  currentACLK = digitalRead(pipData.ENCODER_A_CLK);
+  if ((currentACLK != lastACLK) && (currentACLK == 1))
   {
-    if (digitalRead(pipData.ENCODER_DT) != currentCLK)
+    if (digitalRead(pipData.ENCODER_A_DT) != currentACLK)
     {
-      pipData.encoderValue++;
-      increment = true;
+      pipData.encoderAValue--;
+      decrement = true;
     }
     else
     {
-      pipData.encoderValue--;
-      decrement = true;
+      pipData.encoderAValue++;
+      increment = true;
     }
   }
-  lastCLK = currentCLK;
+  lastACLK = currentACLK;
+}
+
+void ISR_encoder_b()
+{
+  currentBCLK = digitalRead(pipData.ENCODER_B_CLK);
+  if ((currentBCLK != lastBCLK) && (currentBCLK == 1))
+  {
+    if (digitalRead(pipData.ENCODER_B_DT) != currentBCLK)
+    {
+      pipData.encoderBValue--;
+    }
+    else
+    {
+      pipData.encoderBValue++;
+    }
+  }
+  lastBCLK = currentBCLK;
 }
 
 void setup() 
@@ -328,7 +351,8 @@ void setup()
 
   attachInterrupt(digitalPinToInterrupt(REFRESH_BTN_PIN), ISR_refresh_button, RISING);
   attachInterrupt(digitalPinToInterrupt(LOCK_BTN_PIN), ISR_lock_button, RISING);
-  attachInterrupt(digitalPinToInterrupt(pipData.ENCODER_DT), ISR_encoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pipData.ENCODER_A_DT), ISR_encoder_a, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pipData.ENCODER_B_DT), ISR_encoder_b, CHANGE);
 }
 
 
@@ -338,12 +362,12 @@ void loop()
 
   if (pipData.Locked == false) //main routine for running through the tabs loop
   {
-    if ((pipData.encoderValue > prevEncoderValue) || (increment == true))
+    if ((pipData.encoderAValue > prevEncoderAValue) || (increment == true))
     {
       index++;
       increment = false;
     }
-    else if ((pipData.encoderValue < prevEncoderValue) || (decrement == true))
+    else if ((pipData.encoderAValue < prevEncoderAValue) || (decrement == true))
     {
       index--;
       decrement = false;
@@ -389,6 +413,6 @@ void loop()
   }
 
   prevPipColour = pipData.ActiveColour;
-  prevEncoderValue = pipData.encoderValue;
+  prevEncoderAValue = pipData.encoderAValue;
 }
 

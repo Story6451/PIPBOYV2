@@ -26,10 +26,10 @@ class GPSTab : public Tab
 	const uint16_t brMapWidth = 480;
 	const uint16_t brMapHeight = 239;
 	const uint16_t brMapXOffset = 0;
-	const double brMaxLat = 61;
-	const double brMinLat = 49.72;
+	const double brMaxLat = 61.1;
+	const double brMinLat = 49.4;
 	const double brMaxLong = 8.3;
-	const double brMinLong = -15.26;
+	const double brMinLong = -14.5;
 
 	uint16_t mapWidth;
 	uint16_t mapOffset;
@@ -71,9 +71,9 @@ class GPSTab : public Tab
 	//converts the latitude to an x coordinate for the screen with mercator projections
 	double MercLonToXPos(double lon, double lat);
 	//converts the latitude to an y coordinate for the screen with equirectangular projections
-	double EquirectangularLatToYPos(double lat);
+	double EquirectangularYPos(double lat);
 	//converts the longitude to an x coordinate for the screen with equirectangular projections
-	double EquirectangularLongToXPos(double lon, double lat);
+	double EquirectangularXPos(double lon, double lat);
 	void OutputThroughSerial();
 	void TFTOutput();
 	void TFTDrawOptions();
