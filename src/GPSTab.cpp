@@ -149,6 +149,7 @@ void GPSTab::Loop()
         else
         {
             verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*numberOfMaps)/1023);
+            verticalIndex = pPIPDATA->encoderBValue;
             TFTDrawOptions();
         }
     }
