@@ -17,10 +17,10 @@ class ConfigData
         //const byte TotalAdjustableValues = 3;
 
         bool Locked;
-        const uint32_t ENCODER_A_CLK = 2;
+        const uint32_t ENCODER_A_CLK = 5;
         const uint32_t ENCODER_A_DT = 3;
-        const uint32_t ENCODER_B_CLK = 20;
-        const uint32_t ENCODER_B_DT = 21;
+        const uint32_t ENCODER_B_CLK = 4;
+        const uint32_t ENCODER_B_DT = 2;
         const uint32_t POT_1_PIN = 5; 
         const uint32_t POT_2_PIN = 7;
         const uint32_t BTN_3_PIN = 6;

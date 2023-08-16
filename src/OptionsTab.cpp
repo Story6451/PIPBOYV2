@@ -53,11 +53,11 @@ void OptionsTab::Loop()
             verticalIndex--;
         }
 
-        if (verticalIndex > 3)
+        if (verticalIndex > 2)
         {
-            verticalIndex = 3;
+            verticalIndex = 2;
         }
-        else if (verticalIndex < 0)
+        if (verticalIndex < 0)
         {
             verticalIndex = 0;
         }

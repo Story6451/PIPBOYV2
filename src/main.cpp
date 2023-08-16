@@ -60,8 +60,6 @@ int32_t oldIndex = 0;
 int32_t index = 0;
 int32_t prevPipColour;
 
-uint16_t incrementalStep;
-
 Sd2Card card;
 SdVolume volume;
 
@@ -150,15 +148,17 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
 
   //initialises tab objects
   Tabs[Tab::Total] = new HealthTab(&tft, &pipData); 
+  Serial.println("A");
   Tabs[Tab::Total] = new SensorsTab(&tft, &pipData);
+  Serial.println("A");
   Tabs[Tab::Total] = new GPSTab(&tft, &pipData);
+  Serial.println("A");
   Tabs[Tab::Total] = new RadioTab(&tft, &pipData);
+  Serial.println("A");
   Tabs[Tab::Total] = new OptionsTab(&tft, &pipData);
+  Serial.println("A");
   tft.println("Class objects built");
   Serial.println("Class objects built");
-
-  delay(500);
-  incrementalStep = 1023/(Tab::Total+1); 
 
   for (int i = 0; i < Tab::Total + 1; i++) //initialises all of the tabs
   {

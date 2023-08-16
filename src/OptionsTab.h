@@ -16,9 +16,9 @@ class OptionsTab : public Tab
         uint8_t lastCLK;
 
         uint64_t timer;
-        uint8_t colourIndex;
-        uint8_t altitudeOffset;
-        uint8_t volume;
+        int8_t colourIndex;
+        int16_t altitudeOffset;
+        int8_t volume;
         String dataToBeSaved;
     public:
        	OptionsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData);
