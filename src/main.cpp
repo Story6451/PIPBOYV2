@@ -130,6 +130,7 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
   pinMode(pipData.ENCODER_B_CLK, INPUT);
   pinMode(pipData.ENCODER_B_DT, INPUT);
   lastACLK = digitalRead(pipData.ENCODER_A_CLK);
+  lastBCLK = digitalRead(pipData.ENCODER_B_CLK);
   tft.println("Encoder A connected");
   Serial.println("Encoder A connected");
 
@@ -305,24 +306,21 @@ void ISR_lock_button()
 
 void ISR_encoder_a()
 {
-  if (pipData.Locked == false)
+  currentACLK = digitalRead(pipData.ENCODER_A_CLK);
+  if ((currentACLK != lastACLK) && (currentACLK == 1))
   {
-    currentACLK = digitalRead(pipData.ENCODER_A_CLK);
-    if ((currentACLK != lastACLK) && (currentACLK == 1))
+    if (digitalRead(pipData.ENCODER_A_DT) != currentACLK)
     {
-      if (digitalRead(pipData.ENCODER_A_DT) != currentACLK)
-      {
-        pipData.encoderAValue--;
-        decrement = true;
-      }
-      else
-      {
-        pipData.encoderAValue++;
-        increment = true;
-      }
+      pipData.encoderAValue--;
+      decrement = true;
     }
-    lastACLK = currentACLK;
+    else
+    {
+      pipData.encoderAValue++;
+      increment = true;
+    }
   }
+  lastACLK = currentACLK;
 }
 
 void ISR_encoder_b()
@@ -366,15 +364,15 @@ void loop()
   if (pipData.Locked == false) //main routine for running through the tabs loop
   {
 
-    Serial.print("  encoder value: "); Serial.print(pipData.encoderAValue); Serial.print("   ");
-    Serial.print("  prev encoder value: "); Serial.print(prevEncoderAValue); Serial.print("   ");
-    Serial.print("  Index: "); Serial.print(index); Serial.println("   ");
-    if ((increment == true))
+    //Serial.print("  encoder value: "); Serial.print(pipData.encoderAValue); Serial.print("   ");
+    //Serial.print("  prev encoder value: "); Serial.print(prevEncoderAValue); Serial.print("   ");
+    //Serial.print("  Index: "); Serial.print(index); Serial.println("   ");
+    if (increment == true)
     {
       index++;
       increment = false;
     }
-    else if ((decrement == true))
+    else if (decrement == true)
     {
       index--;
       decrement = false;

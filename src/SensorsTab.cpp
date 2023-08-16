@@ -158,17 +158,18 @@ void SensorsTab::TFTOutput()
     pTFT->setTextSize(2);
     
     //displays date and time
-    pTFT->setCursor(0, 100);
-    pTFT->print("  Date: "); pTFT->println(GetDateTime());
-    
+    pTFT->setCursor(10, 100);
+    pTFT->print("Date: "); pTFT->println(GetDateTime());
     //displays pressure
-    pTFT->print("  Pressure: "); pTFT->print(GetPressure()); pTFT->println(" Pa ");
-
+    pTFT->setCursor(10, 120);
+    pTFT->print("Pressure: "); pTFT->print(GetPressure()); pTFT->println(" Pa ");
     //displays altitude
-    pTFT->print("  Altitude: "); pTFT->print(GetAltitude()); pTFT->println(" m ");
+    pTFT->setCursor(10, 140);
+    pTFT->print("Altitude: "); pTFT->print(GetAltitude()); pTFT->println(" m ");
 
     //displays temperature
-    pTFT->print("  Temperature: "); pTFT->print(GetTemperature()); pTFT->println(" 'C "); 
+    pTFT->setCursor(10, 160);
+    pTFT->print("Temperature: "); pTFT->print(GetTemperature()); pTFT->println(" 'C "); 
     
     Serial.println("Testing data tab");
 }

@@ -7,12 +7,14 @@ class OptionsTab : public Tab
 {
     private:
         const uint8_t totalAdjustableValues = 3;
-        uint8_t oldIndex;
-        uint8_t verticalIndex;
-        uint8_t currentCLK;
-        uint8_t lastCLK;
+        int8_t prevVerticalIndex;
+        int8_t verticalIndex;
         int32_t horozontalIndex;
         int32_t prevHorozontalIndex;
+        int32_t prevEncoderBValue;
+        uint8_t currentCLK;
+        uint8_t lastCLK;
+
         uint64_t timer;
         uint8_t colourIndex;
         uint8_t altitudeOffset;

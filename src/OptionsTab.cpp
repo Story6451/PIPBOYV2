@@ -17,7 +17,8 @@ void OptionsTab::Setup()
     dataToBeSaved = "";
     timer = 0;
     verticalIndex = 0;
-    oldIndex = -1;
+    prevVerticalIndex = -1;
+    prevEncoderBValue = -1;
     altitudeOffset = pPIPDATA->AltitudeOffset;
     volume = pPIPDATA->Volume; 
     switch (pPIPDATA->ActiveColour)
@@ -41,9 +42,32 @@ void OptionsTab::Loop()
 {
     if (pPIPDATA->Locked == true)
     {
-        verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*3)/1023);
+        //verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*3)/1023);
         verticalIndex = pPIPDATA->encoderBValue;
+        if (pPIPDATA->encoderBValue > prevEncoderBValue)
+        {
+            verticalIndex++;
+        }
+        else if (pPIPDATA->encoderBValue < prevEncoderBValue)
+        {
+            verticalIndex--;
+        }
+
+        if (verticalIndex > 3)
+        {
+            verticalIndex = 3;
+        }
+        else if (verticalIndex < 0)
+        {
+            verticalIndex = 0;
+        }
+
         horozontalIndex = pPIPDATA->encoderAValue;
+
+        Serial.print("  Vertical Index: "); Serial.print(verticalIndex);
+        Serial.print("  Horozontal Index: "); Serial.print(horozontalIndex);
+        Serial.print("  Encoder B value: "); Serial.print(pPIPDATA->encoderBValue);
+        Serial.print("  Previous encoder B value: "); Serial.println(prevEncoderBValue);
 
         switch (verticalIndex)
         {
@@ -151,10 +175,10 @@ void OptionsTab::TFTOutput()
 {
     if ((millis() - timer) > 200)
     {
-        if (verticalIndex != oldIndex)
+        if (verticalIndex != prevVerticalIndex)
         {
-            pTFT->drawRect(10, oldIndex * 220/totalAdjustableValues + 93, 320, 30, BLACK);
-            oldIndex = verticalIndex;
+            pTFT->drawRect(10, prevVerticalIndex * 220/totalAdjustableValues + 93, 320, 30, BLACK);
+            prevVerticalIndex = verticalIndex;
         }
         pTFT->drawRect(10, verticalIndex * 220/totalAdjustableValues + 93, 320, 30, pPIPDATA->ActiveColour);
 
