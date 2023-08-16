@@ -131,6 +131,8 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
   lastBCLK = digitalRead(pipData.ENCODER_B_CLK);
   tft.println("Encoder A connected");
   Serial.println("Encoder A connected");
+  tft.println("Encoder B connected");
+  Serial.println("Encoder B connected");
 
   //Button inputs
   pinMode(REFRESH_BTN_PIN, INPUT); 
@@ -148,15 +150,10 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
 
   //initialises tab objects
   Tabs[Tab::Total] = new HealthTab(&tft, &pipData); 
-  Serial.println("A");
   Tabs[Tab::Total] = new SensorsTab(&tft, &pipData);
-  Serial.println("A");
   Tabs[Tab::Total] = new GPSTab(&tft, &pipData);
-  Serial.println("A");
   Tabs[Tab::Total] = new RadioTab(&tft, &pipData);
-  Serial.println("A");
   Tabs[Tab::Total] = new OptionsTab(&tft, &pipData);
-  Serial.println("A");
   tft.println("Class objects built");
   Serial.println("Class objects built");
 
@@ -377,12 +374,11 @@ void loop()
       index--;
       decrement = false;
     }
-
-    if (index > Tab::Total) //sets index = to the current value of the horozontal potentiometer
+    if (index > (int32_t)Tab::Total) //sets index = to the current value of the horozontal potentiometer
     {
       index = Tab::Total;
     }
-    else if (index < 0)
+    if (index < 0)
     {
       index = 0;
     }

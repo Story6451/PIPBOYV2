@@ -44,8 +44,9 @@ class GPSTab : public Tab
 
   	double latitude;
   	double longitude;
-	uint8_t verticalIndex = 0;
-	uint8_t oldIndex = 0;
+	int8_t verticalIndex = 0;
+	int8_t prevVerticalIndex = 0;
+	int32_t prevEncoderBValue;
   	int8_t satellites;
 	uint16_t altitude;
 	int16_t xScreenPos;

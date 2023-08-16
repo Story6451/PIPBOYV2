@@ -43,7 +43,7 @@ void OptionsTab::Loop()
     if (pPIPDATA->Locked == true)
     {
         //verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*3)/1023);
-        verticalIndex = pPIPDATA->encoderBValue;
+        //verticalIndex = pPIPDATA->encoderBValue;
         if (pPIPDATA->encoderBValue > prevEncoderBValue)
         {
             verticalIndex++;
@@ -57,17 +57,17 @@ void OptionsTab::Loop()
         {
             verticalIndex = 2;
         }
-        if (verticalIndex < 0)
+        else if (verticalIndex < 0)
         {
             verticalIndex = 0;
         }
 
         horozontalIndex = pPIPDATA->encoderAValue;
 
-        Serial.print("  Vertical Index: "); Serial.print(verticalIndex);
-        Serial.print("  Horozontal Index: "); Serial.print(horozontalIndex);
-        Serial.print("  Encoder B value: "); Serial.print(pPIPDATA->encoderBValue);
-        Serial.print("  Previous encoder B value: "); Serial.println(prevEncoderBValue);
+        //Serial.print("  Vertical Index: "); Serial.print(verticalIndex);
+        //Serial.print("  Horozontal Index: "); Serial.print(horozontalIndex);
+        //Serial.print("  Encoder B value: "); Serial.print(pPIPDATA->encoderBValue);
+        //Serial.print("  Previous encoder B value: "); Serial.println(prevEncoderBValue);
 
         switch (verticalIndex)
         {
@@ -114,11 +114,12 @@ void OptionsTab::Loop()
                 {
                     altitudeOffset -= 10;
                 }
+
                 if (altitudeOffset > 200)
                 {
                     altitudeOffset = 200;
                 }
-                else if (altitudeOffset == 0)
+                else if (altitudeOffset <= 0)
                 {
                     altitudeOffset = 0;
                 }
@@ -133,6 +134,7 @@ void OptionsTab::Loop()
                 {
                     volume -= 10;
                 }
+
                 if (volume > 100)
                 {
                     volume = 100;
@@ -144,6 +146,7 @@ void OptionsTab::Loop()
                 pPIPDATA->Volume = volume;
         }
         prevHorozontalIndex = horozontalIndex;
+        prevEncoderBValue = pPIPDATA->encoderBValue;
     }
     SaveSettings();
     TFTOutput();

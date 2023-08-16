@@ -33,6 +33,7 @@ void GPSTab::Setup()
     timer = 0;
     //verticalIndex = 0;
     //oldIndex = 0;
+    prevEncoderBValue = -1;
     mapWidth = 0;
 	mapOffset = 0;
 	maxLat = 0;
@@ -148,8 +149,31 @@ void GPSTab::Loop()
         }
         else
         {
-            verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*numberOfMaps)/1023);
-            verticalIndex = pPIPDATA->encoderBValue;
+            //verticalIndex = round((analogRead(pPIPDATA->POT_1_PIN)*numberOfMaps)/1023);
+            //verticalIndex = pPIPDATA->encoderBValue;
+            if (pPIPDATA->encoderBValue > prevEncoderBValue)
+            {
+                verticalIndex++;
+            }
+            else if (pPIPDATA->encoderBValue < prevEncoderBValue)
+            {
+                verticalIndex--;
+            }
+
+            if (verticalIndex > 2)
+            {
+                verticalIndex = 2;
+            }
+            else if (verticalIndex < 0)
+            {
+                verticalIndex = 0;
+            }
+            /*
+            Serial.print("  Vertical Index: "); Serial.print(verticalIndex);
+            Serial.print("  Encoder B value: "); Serial.print(pPIPDATA->encoderBValue);
+            Serial.print("  Previous encoder B value: "); Serial.println(prevEncoderBValue);
+            */
+            prevEncoderBValue = pPIPDATA->encoderBValue;
             TFTDrawOptions();
         }
     }
@@ -165,10 +189,10 @@ void GPSTab::TFTDrawOptions()
     pTFT->setCursor(20, 247);
     pTFT->print("Country Map");
 
-    if (verticalIndex != oldIndex)
+    if (verticalIndex != prevVerticalIndex)
     {
-        pTFT->drawRect(10, oldIndex * 250/numberOfMaps + 70, 320, 30, BLACK);
-        oldIndex = verticalIndex;
+        pTFT->drawRect(10, prevVerticalIndex * 250/numberOfMaps + 70, 320, 30, BLACK);
+        prevVerticalIndex = verticalIndex;
         
     }
     pTFT->drawRect(10, verticalIndex * 250/numberOfMaps + 70, 320, 30, pPIPDATA->ActiveColour);
