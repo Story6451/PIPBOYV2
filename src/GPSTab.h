@@ -14,14 +14,18 @@ class GPSTab : public Tab
 	const uint16_t worldMapWidth = 480;
 	const uint16_t worldMapHeight = 239;
 	const uint16_t worldMapXOffset = 0;
+	const int16_t worldXCursurOffset = - 3;
+	const int16_t worldYCursurOffset = - 11;
 
 	const uint16_t euMapWidth = 480;
 	const uint16_t euMapHeight = 239;
 	const uint16_t euMapXOffset = 0;
-	const double euMaxLat = 71;
-	const double euMinLat = 33;
-	const double euMaxLong = 66;
-	const double euMinLong = -26;
+	const double euMaxLat = 73.5;
+	const double euMinLat = 34;
+	const double euMaxLong = 65;
+	const double euMinLong = -25;
+	const int16_t euXCursurOffset = -6;
+	const int16_t euYCursurOffset = -8;
 
 	const uint16_t brMapWidth = 480;
 	const uint16_t brMapHeight = 239;
@@ -30,6 +34,8 @@ class GPSTab : public Tab
 	const double brMinLat = 49.4;
 	const double brMaxLong = 8.3;
 	const double brMinLong = -14.5;
+	const int16_t brXCursurOffset = -6;
+	const int16_t brYCursurOffset = -8;
 
 	uint16_t mapWidth;
 	uint16_t mapOffset;
@@ -38,10 +44,10 @@ class GPSTab : public Tab
 	double maxLong;
 	double minLong;
 
-	const int16_t xCursurOffset = -3; //-6 - an amount
-	const int16_t yCursurOffset = -9;
 	const uint8_t numberOfMaps = 3;
 
+	int16_t xCursurOffset = -3; //-6 - an amount
+	int16_t yCursurOffset = -9;
   	double latitude;
   	double longitude;
 	int8_t verticalIndex = 0;

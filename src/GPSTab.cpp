@@ -114,6 +114,7 @@ void GPSTab::Loop()
                 
                 //yScreenPos = MercLatToYPos(correctedLat);
                 //xScreenPos = MercLonToXPos(longitude, correctedLat);
+
                 uint16_t posX = EquirectangularXPos(longitude, correctedLat);
                 uint16_t posY = EquirectangularYPos(correctedLat);
                 uint16_t minX = EquirectangularXPos(minLong, minLat);
@@ -296,6 +297,8 @@ void GPSTab::TFTDrawMap()
             minLong = euMinLong;
             mapWidth = euMapWidth;
             mapOffset = euMapXOffset;
+            xCursurOffset = euXCursurOffset;
+            yCursurOffset = euYCursurOffset;
             break;
         case 2:
             pTFT->drawBitmap(brMapXOffset, YOffset, BritianMap, brMapWidth, brMapHeight, pPIPDATA->ActiveColour);
@@ -305,6 +308,8 @@ void GPSTab::TFTDrawMap()
             minLong = brMinLong;
             mapWidth = brMapWidth;
             mapOffset = brMapXOffset;
+            xCursurOffset = brXCursurOffset;
+            yCursurOffset = brYCursurOffset;
             break;
         default:
             pTFT->drawBitmap(worldMapXOffset, YOffset, WorldMap, worldMapWidth, worldMapHeight, pPIPDATA->ActiveColour);
@@ -314,6 +319,8 @@ void GPSTab::TFTDrawMap()
             minLong = -180;
             mapWidth = worldMapWidth;
             mapOffset = worldMapXOffset;
+            xCursurOffset = worldXCursurOffset;
+            yCursurOffset = worldYCursurOffset;
             break;
     }
     
