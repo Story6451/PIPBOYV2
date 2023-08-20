@@ -6,20 +6,32 @@
 class OptionsTab : public Tab
 {
     private:
-        const uint8_t totalAdjustableValues = 3;
-        int8_t prevVerticalIndex;
-        int8_t verticalIndex;
-        int32_t horozontalIndex;
-        int32_t prevHorozontalIndex;
+        const uint8_t numberOfOptions = 5;
         int32_t prevEncoderBValue;
         uint8_t currentCLK;
         uint8_t lastCLK;
 
-        uint64_t timer;
+        int8_t prevVerticalIndex;
+        int8_t verticalIndex;
+        int8_t cursorIndex;
+        int8_t prevCursorIndex;
+        int32_t horozontalIndex;
+        int32_t prevHorozontalIndex;
+        
+
+        //options
+        String options[5] = {"Colour", "Altitude Offset", "Volume", "Text Size", "Flip Screen"};
+        String optionsData[5];
+        int8_t firstDisplayed;
+        int8_t prevFirstDisplayed;
         int8_t colourIndex;
         int16_t altitudeOffset;
         int8_t volume;
+        int8_t textSize;
+        int8_t flipScreen;
+
         String dataToBeSaved;
+        uint64_t timer;
     public:
        	OptionsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData);
         String ModuleName(){return "OPTIONS";}

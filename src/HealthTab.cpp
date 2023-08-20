@@ -29,8 +29,8 @@ void HealthTab::Setup()
     bpmArrayPosition = 0;
 
     step = 0;
-    t1 = 0;
-    t2 = 0;
+    timer = 0;
+    //t2 = 0;
 
     for (int i = 0; i < BUFFER_LENGTH -1; i++)
     {
@@ -164,11 +164,11 @@ void HealthTab::OutputThroughSerial()
 
 void HealthTab::TFTOutput()
 {
-    t2 = millis();
-    if ((t2 - t1) > 10) //check to see if 10ms has passed
+    //t2 = millis();
+    if ((timer - millis()) > 10) //check to see if 10ms has passed
     {
-        pTFT->setTextSize(2);
         pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
+        pTFT->setTextSize(pPIPDATA->TextSize);
 
         //displays bpm
         pTFT->setCursor(20, 100);
@@ -193,7 +193,7 @@ void HealthTab::TFTOutput()
             pTFT->print("error"); 
         }
         pTFT->print(" ");
-        t1 = t2;
+        timer = millis();
 
         pTFT->drawFastVLine(step, (320 - map(rawVal, 0, 1023, 0, 140)), map(rawVal, 0, 1023, 0, 140), pPIPDATA->ActiveColour);
         step++;

@@ -182,7 +182,7 @@ void GPSTab::Loop()
 
 void GPSTab::TFTDrawOptions()
 {
-    pTFT->setTextSize(2);
+    pTFT->setTextSize(pPIPDATA->TextSize);
     pTFT->setCursor(20, 75);
     pTFT->print("World Map");
     pTFT->setCursor(20, 161);
@@ -192,11 +192,11 @@ void GPSTab::TFTDrawOptions()
 
     if (verticalIndex != prevVerticalIndex)
     {
-        pTFT->drawRect(10, prevVerticalIndex * 250/numberOfMaps + 70, 320, 30, BLACK);
+        pTFT->drawRect(10, prevVerticalIndex * 255/numberOfMaps + 70, 460, 33, BLACK);
         prevVerticalIndex = verticalIndex;
         
     }
-    pTFT->drawRect(10, verticalIndex * 250/numberOfMaps + 70, 320, 30, pPIPDATA->ActiveColour);
+    pTFT->drawRect(10, verticalIndex * 255/numberOfMaps + 70, 460, 33, pPIPDATA->ActiveColour);
 
 }
 

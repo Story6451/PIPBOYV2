@@ -155,20 +155,20 @@ void SensorsTab::OutputThroughSerial()
 void SensorsTab::TFTOutput()
 {
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
-    pTFT->setTextSize(2);
+    pTFT->setTextSize(pPIPDATA->TextSize);
     
     //displays date and time
     pTFT->setCursor(10, 100);
     pTFT->print("Date: "); pTFT->println(GetDateTime());
     //displays pressure
-    pTFT->setCursor(10, 120);
+    pTFT->setCursor(10, 130);
     pTFT->print("Pressure: "); pTFT->print(GetPressure()); pTFT->println(" Pa ");
     //displays altitude
-    pTFT->setCursor(10, 140);
+    pTFT->setCursor(10, 160);
     pTFT->print("Altitude: "); pTFT->print(GetAltitude()); pTFT->println(" m ");
 
     //displays temperature
-    pTFT->setCursor(10, 160);
+    pTFT->setCursor(10, 190);
     pTFT->print("Temperature: "); pTFT->print(GetTemperature()); pTFT->println(" 'C "); 
     
     Serial.println("Testing data tab");

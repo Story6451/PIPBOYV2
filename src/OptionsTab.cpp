@@ -5,19 +5,21 @@
 
 OptionsTab::OptionsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
 {
+    verticalIndex = 0;
+    prevVerticalIndex = 0;
+    cursorIndex = 0;
+    prevCursorIndex = 0;
     horozontalIndex = 0;
     prevHorozontalIndex = 0;
+    firstDisplayed = 0;
+    prevFirstDisplayed = 0;
 }
 
 void OptionsTab::Setup()
 {
-    pTFT->setTextSize(2);
-    pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);  
-
     dataToBeSaved = "";
     timer = 0;
-    verticalIndex = 0;
-    prevVerticalIndex = -1;
+
     prevEncoderBValue = -1;
     altitudeOffset = pPIPDATA->AltitudeOffset;
     volume = pPIPDATA->Volume; 
@@ -36,6 +38,8 @@ void OptionsTab::Setup()
             colourIndex = 3;
             break;
     }
+    textSize = pPIPDATA->TextSize;
+    flipScreen = pPIPDATA->FlipScreen;
 }
 
 void OptionsTab::Loop()
@@ -47,28 +51,49 @@ void OptionsTab::Loop()
         if (pPIPDATA->encoderBValue > prevEncoderBValue)
         {
             verticalIndex++;
+            cursorIndex++;
         }
         else if (pPIPDATA->encoderBValue < prevEncoderBValue)
         {
             verticalIndex--;
+            cursorIndex--;
         }
 
-        if (verticalIndex > 2)
+        if (cursorIndex > 2)
         {
-            verticalIndex = 2;
+            firstDisplayed++;
+            cursorIndex = 2;
         }
-        else if (verticalIndex < 0)
+        else if (cursorIndex < 0)
         {
+            firstDisplayed--;
+            cursorIndex = 0;
+        }
+
+        if (verticalIndex > 3)
+        {
+            firstDisplayed = 2;
+        }
+        else if (verticalIndex <= 0)
+        {
+            firstDisplayed = 0;
             verticalIndex = 0;
+        }
+        
+        if (verticalIndex > 4)
+        {
+            verticalIndex = 4;
         }
 
         horozontalIndex = pPIPDATA->encoderAValue;
 
-        //Serial.print("  Vertical Index: "); Serial.print(verticalIndex);
-        //Serial.print("  Horozontal Index: "); Serial.print(horozontalIndex);
-        //Serial.print("  Encoder B value: "); Serial.print(pPIPDATA->encoderBValue);
-        //Serial.print("  Previous encoder B value: "); Serial.println(prevEncoderBValue);
+        Serial.print("  Vertical Index: "); Serial.print(verticalIndex);
+        Serial.print("  Cursor Index: "); Serial.print(cursorIndex);
+        Serial.print("  first displayed Index: "); Serial.println(firstDisplayed);
 
+        Serial.print("  Horozontal Index: "); Serial.print(horozontalIndex);
+
+        //checks which item is selected
         switch (verticalIndex)
         {
             case 0:
@@ -144,6 +169,50 @@ void OptionsTab::Loop()
                     volume = 0;
                 }
                 pPIPDATA->Volume = volume;
+                break;
+            case 3:
+                if (horozontalIndex > prevHorozontalIndex)
+                {
+                    textSize++;
+                }
+                else if (horozontalIndex < prevHorozontalIndex)
+                {
+                    textSize--;
+                }
+
+                if (textSize > 3)
+                {
+                    textSize = 3;
+                }
+                else if (textSize < 0)
+                {
+                    textSize = 0;
+                }
+                pPIPDATA->TextSize = textSize;
+                break;
+            case 4:
+                if ((horozontalIndex > prevHorozontalIndex) || (horozontalIndex < prevHorozontalIndex))
+                {
+                    if (flipScreen == 1)
+                    {
+                        flipScreen = 0;
+                    }
+                    else
+                    {
+                        flipScreen = 1;
+                    }
+                
+                    if (flipScreen == 1)
+                    {
+                        pTFT->setRotation(3);
+                    }
+                    else
+                    {
+                        pTFT->setRotation(1);
+                    }
+                }
+                pPIPDATA->FlipScreen = flipScreen;
+                break;
         }
         prevHorozontalIndex = horozontalIndex;
         prevEncoderBValue = pPIPDATA->encoderBValue;
@@ -160,6 +229,10 @@ void OptionsTab::SaveSettings()
     dataToBeSaved += ",";
     dataToBeSaved += pPIPDATA->Volume;
     dataToBeSaved += ",";
+    dataToBeSaved += pPIPDATA->TextSize;
+    dataToBeSaved += ",";
+    dataToBeSaved += pPIPDATA->FlipScreen;
+    dataToBeSaved += ",";
 
     if (SD.exists("config.txt"))
     {
@@ -175,15 +248,23 @@ void OptionsTab::SaveSettings()
 }
 
 void OptionsTab::TFTOutput()
-{
-    if ((millis() - timer) > 200)
+{   
+    pTFT->setTextColor(pPIPDATA->ActiveColour);
+    pTFT->setTextSize(pPIPDATA->TextSize);
+    //if ((millis() - timer) > 100)
     {
-        if (verticalIndex != prevVerticalIndex)
+        if (cursorIndex != prevCursorIndex)
         {
-            pTFT->drawRect(10, prevVerticalIndex * 220/totalAdjustableValues + 93, 320, 30, BLACK);
-            prevVerticalIndex = verticalIndex;
+            pTFT->drawRect(10, prevCursorIndex * 220/3 + 93, 460, 33, BLACK);
+            prevCursorIndex = cursorIndex;
         }
-        pTFT->drawRect(10, verticalIndex * 220/totalAdjustableValues + 93, 320, 30, pPIPDATA->ActiveColour);
+        pTFT->drawRect(10, cursorIndex * 220/3 + 93, 460, 33, pPIPDATA->ActiveColour);
+
+        if (firstDisplayed != prevFirstDisplayed)
+        {
+            pTFT->fillRect(10, 61, 470, 259, BLACK);
+            prevFirstDisplayed = firstDisplayed;
+        }
 
         String currentColour;
 
@@ -205,14 +286,31 @@ void OptionsTab::TFTOutput()
                 currentColour = pPIPDATA->ActiveColour;
                 break;
         }
+
+        String flipped;
+        if (flipScreen == 1)
+        {
+            flipped = "TRUE";
+        }
+        else
+        {
+            flipped = "FALSE";
+        }
+
+        optionsData[0] = currentColour;
+        optionsData[1] = pPIPDATA->AltitudeOffset;
+        optionsData[2] = pPIPDATA->Volume;
+        optionsData[3] = pPIPDATA->TextSize;
+        optionsData[4] = flipped;
+
         pTFT->setCursor(20, 100);
-        pTFT->print("Colour Mode: "); pTFT->print(currentColour);
+        pTFT->print(options[firstDisplayed]); pTFT->print(": "); pTFT->print(optionsData[firstDisplayed]); pTFT->print("  ");
 
         pTFT->setCursor(20, 173);
-        pTFT->print("Altitude Offset (m): "); pTFT->print(pPIPDATA->AltitudeOffset); pTFT->println("  ");
+        pTFT->print(options[firstDisplayed + 1]); pTFT->print("(m): "); pTFT->print(optionsData[firstDisplayed + 1]); pTFT->print("  ");
 
         pTFT->setCursor(20, 246);
-        pTFT->print("Volume: "); pTFT->print(pPIPDATA->Volume); pTFT->println("  ");
+        pTFT->print(options[firstDisplayed + 2]); pTFT->print(": "); pTFT->print(optionsData[firstDisplayed + 2]); pTFT->print("  ");
 
         timer = millis();
     }

@@ -59,6 +59,8 @@ int32_t prevBtnState = LOW;
 int32_t oldIndex = 0;
 int32_t index = 0;
 int32_t prevPipColour;
+int8_t prevTextSize;
+int8_t prevFlipScreen;
 
 Sd2Card card;
 SdVolume volume;
@@ -137,7 +139,7 @@ void PeripheralSetup() //initialises the external hardware and logs it to the tf
   //Button inputs
   pinMode(REFRESH_BTN_PIN, INPUT); 
   pinMode(LOCK_BTN_PIN, INPUT);
-  pinMode(pipData.BTN_3_PIN, INPUT);
+  //pinMode(pipData.BTN_3_PIN, INPUT);
   tft.println("Buttons connected");
   Serial.println("Buttons connected");
 
@@ -229,12 +231,12 @@ void GetSettings()
   {
     File file = SD.open("config.txt");
     
-    String datas[3];
+    String datas[5];
     if (file)
     {
       Serial.println("file available");
       int count = 0;
-      while (file.available())
+      while ((file.available()) && (count < 5))
       {
         char stream = file.read();
         Serial.print(stream);        
@@ -254,7 +256,7 @@ void GetSettings()
     }
 
     Serial.println(" ");
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 5; i++)
     {
       Serial.print("data: "); Serial.println(datas[i].toInt());
     }
@@ -266,7 +268,8 @@ void GetSettings()
     pipData.ActiveColour = datas[0].toInt();
     pipData.AltitudeOffset = datas[1].toInt();
     pipData.Volume = datas[2].toInt();
-    
+    pipData.TextSize = datas[3].toInt();
+    pipData.FlipScreen = datas[4].toInt();
   }
   else
   {
@@ -408,14 +411,17 @@ void loop()
     Tabs[index]->Loop();
   }
 
-  if (pipData.ActiveColour != prevPipColour)
+  if ((pipData.ActiveColour != prevPipColour) || (pipData.TextSize != prevTextSize) || (pipData.FlipScreen != prevFlipScreen))
   {
+    tft.fillRect(0, 0, 480, 320, BLACK);
     DrawTabs();
     DrawMenuCursur(index, oldIndex);
     Tabs[index]->Setup();
   }
 
   prevPipColour = pipData.ActiveColour;
+  prevTextSize = pipData.TextSize;
+  prevFlipScreen = pipData.FlipScreen;
   prevEncoderAValue = pipData.encoderAValue;
 }
 
