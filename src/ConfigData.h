@@ -11,8 +11,8 @@ class ConfigData
         uint8_t AltitudeOffset;
         uint8_t Volume;
         uint8_t TextSize;
-        uint8_t FlipScreen;
-
+        uint8_t Orientation;
+        uint8_t LightStatus;
         //cotnrols
         int32_t encoderAValue = 0;
         int32_t encoderBValue = 0;
@@ -25,5 +25,5 @@ class ConfigData
         //const uint32_t BTN_3_PIN = 6;
         bool Locked;
 
-        ConfigData() :ActiveColour(GREEN), AltitudeOffset(50), Volume(50), TextSize(2), FlipScreen(false), Locked(false){}
+        ConfigData() :ActiveColour(GREEN), AltitudeOffset(50), Volume(50), TextSize(2), Orientation(false), LightStatus(true), Locked(false){}
 };

@@ -20,15 +20,16 @@ class OptionsTab : public Tab
         
 
         //options
-        String options[5] = {"Colour", "Altitude Offset", "Volume", "Text Size", "Flip Screen"};
-        String optionsData[5];
+        String options[6] = {"Colour", "Altitude Offset", "Volume", "Text Size", "Flip Screen", "LED's"};
+        String optionsData[6];
         int8_t firstDisplayed;
         int8_t prevFirstDisplayed;
         int8_t colourIndex;
         int16_t altitudeOffset;
         int8_t volume;
         int8_t textSize;
-        int8_t flipScreen;
+        int8_t orientation;
+        int8_t lightsOn;
 
         String dataToBeSaved;
         uint64_t timer;

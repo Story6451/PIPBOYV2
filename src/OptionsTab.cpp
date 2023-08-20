@@ -39,7 +39,9 @@ void OptionsTab::Setup()
             break;
     }
     textSize = pPIPDATA->TextSize;
-    flipScreen = pPIPDATA->FlipScreen;
+    orientation = pPIPDATA->Orientation;
+    lightsOn = pPIPDATA->LightStatus;
+    TFTOutput();
 }
 
 void OptionsTab::Loop()
@@ -70,9 +72,9 @@ void OptionsTab::Loop()
             cursorIndex = 0;
         }
 
-        if (verticalIndex > 3)
+        if (verticalIndex > 4)
         {
-            firstDisplayed = 2;
+            firstDisplayed = 3;
         }
         else if (verticalIndex <= 0)
         {
@@ -80,18 +82,17 @@ void OptionsTab::Loop()
             verticalIndex = 0;
         }
         
-        if (verticalIndex > 4)
+        if (verticalIndex > 5)
         {
-            verticalIndex = 4;
+            verticalIndex = 5;
         }
 
         horozontalIndex = pPIPDATA->encoderAValue;
+        
 
         Serial.print("  Vertical Index: "); Serial.print(verticalIndex);
         Serial.print("  Cursor Index: "); Serial.print(cursorIndex);
         Serial.print("  first displayed Index: "); Serial.println(firstDisplayed);
-
-        Serial.print("  Horozontal Index: "); Serial.print(horozontalIndex);
 
         //checks which item is selected
         switch (verticalIndex)
@@ -184,41 +185,48 @@ void OptionsTab::Loop()
                 {
                     textSize = 3;
                 }
-                else if (textSize < 0)
+                else if (textSize < 1)
                 {
-                    textSize = 0;
+                    textSize = 1;
                 }
                 pPIPDATA->TextSize = textSize;
                 break;
             case 4:
                 if ((horozontalIndex > prevHorozontalIndex) || (horozontalIndex < prevHorozontalIndex))
                 {
-                    if (flipScreen == 1)
+                    if (orientation == 1)
                     {
-                        flipScreen = 0;
+                        orientation = 3;
                     }
                     else
                     {
-                        flipScreen = 1;
+                        orientation = 1;
                     }
-                
-                    if (flipScreen == 1)
+                    pTFT->setRotation(orientation);
+                }
+                pPIPDATA->Orientation = orientation;
+                break;
+            case 5:
+                if ((horozontalIndex > prevHorozontalIndex) || (horozontalIndex < prevHorozontalIndex))
+                {
+                    if (lightsOn == 1)
                     {
-                        pTFT->setRotation(3);
+                        lightsOn = 0;
+                        pPIPDATA->LightStatus = false;
                     }
                     else
                     {
-                        pTFT->setRotation(1);
+                        lightsOn = 1;
+                        pPIPDATA->LightStatus = true;
                     }
                 }
-                pPIPDATA->FlipScreen = flipScreen;
-                break;
         }
         prevHorozontalIndex = horozontalIndex;
         prevEncoderBValue = pPIPDATA->encoderBValue;
+
+        SaveSettings();
+        TFTOutput();
     }
-    SaveSettings();
-    TFTOutput();
 }
 
 void OptionsTab::SaveSettings()
@@ -231,12 +239,15 @@ void OptionsTab::SaveSettings()
     dataToBeSaved += ",";
     dataToBeSaved += pPIPDATA->TextSize;
     dataToBeSaved += ",";
-    dataToBeSaved += pPIPDATA->FlipScreen;
+    dataToBeSaved += pPIPDATA->Orientation;
+    dataToBeSaved += ",";
+    dataToBeSaved += pPIPDATA->LightStatus;
     dataToBeSaved += ",";
 
     if (SD.exists("config.txt"))
     {
-        //Serial.println("File exists");
+        Serial.println("File exists");
+        Serial.println(dataToBeSaved);
         SD.remove("config.txt");
         File file = SD.open("config.txt", FILE_WRITE);
         if (file)
@@ -249,69 +260,80 @@ void OptionsTab::SaveSettings()
 
 void OptionsTab::TFTOutput()
 {   
-    pTFT->setTextColor(pPIPDATA->ActiveColour);
+    
+    pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
     pTFT->setTextSize(pPIPDATA->TextSize);
-    //if ((millis() - timer) > 100)
+
+    if (cursorIndex != prevCursorIndex)
     {
-        if (cursorIndex != prevCursorIndex)
-        {
-            pTFT->drawRect(10, prevCursorIndex * 220/3 + 93, 460, 33, BLACK);
-            prevCursorIndex = cursorIndex;
-        }
-        pTFT->drawRect(10, cursorIndex * 220/3 + 93, 460, 33, pPIPDATA->ActiveColour);
-
-        if (firstDisplayed != prevFirstDisplayed)
-        {
-            pTFT->fillRect(10, 61, 470, 259, BLACK);
-            prevFirstDisplayed = firstDisplayed;
-        }
-
-        String currentColour;
-
-        switch (pPIPDATA->ActiveColour)
-        {
-            case 64512:
-                currentColour = "AMBER";
-                break;
-            case 7836:
-                currentColour = "BLUE";
-                break;
-            case 9537:
-                currentColour = "GREEN";
-                break;
-            case 42322:
-                currentColour = "WHITE";
-                break;
-            default:
-                currentColour = pPIPDATA->ActiveColour;
-                break;
-        }
-
-        String flipped;
-        if (flipScreen == 1)
-        {
-            flipped = "TRUE";
-        }
-        else
-        {
-            flipped = "FALSE";
-        }
-
-        optionsData[0] = currentColour;
-        optionsData[1] = pPIPDATA->AltitudeOffset;
-        optionsData[2] = pPIPDATA->Volume;
-        optionsData[3] = pPIPDATA->TextSize;
-        optionsData[4] = flipped;
-
-        pTFT->setCursor(20, 100);
-        pTFT->print(options[firstDisplayed]); pTFT->print(": "); pTFT->print(optionsData[firstDisplayed]); pTFT->print("  ");
-
-        pTFT->setCursor(20, 173);
-        pTFT->print(options[firstDisplayed + 1]); pTFT->print("(m): "); pTFT->print(optionsData[firstDisplayed + 1]); pTFT->print("  ");
-
-        pTFT->setCursor(20, 246);
-        pTFT->print(options[firstDisplayed + 2]); pTFT->print(": "); pTFT->print(optionsData[firstDisplayed + 2]); pTFT->print("  ");
-
-        timer = millis();
+        pTFT->drawRect(10, prevCursorIndex * 220/3 + 93, 460, 33, BLACK);
+        prevCursorIndex = cursorIndex;
     }
+    pTFT->drawRect(10, cursorIndex * 220/3 + 93, 460, 33, pPIPDATA->ActiveColour);
+
+    if (firstDisplayed != prevFirstDisplayed)
+    {
+        pTFT->fillRect(10, 61, 470, 259, BLACK);
+        prevFirstDisplayed = firstDisplayed;
+    }
+
+    String currentColour;
+
+    switch (pPIPDATA->ActiveColour)
+    {
+        case 64512:
+            currentColour = "AMBER";
+            break;
+        case 7836:
+            currentColour = "BLUE";
+            break;
+        case 9537:
+            currentColour = "GREEN";
+            break;
+        case 42322:
+            currentColour = "WHITE";
+            break;
+        default:
+            currentColour = pPIPDATA->ActiveColour;
+            break;
+    }
+
+    String flipped;
+    if (orientation == 1)
+    {
+        flipped = " NORMAL ";
+    }
+    else
+    {
+        flipped = " FLIPPED ";
+    }
+
+    String LightStatus;
+    if (lightsOn == 1)
+    {
+        LightStatus = " ON ";
+    }
+    else
+    {
+        LightStatus = " OFF ";
+    }
+
+    optionsData[0] = currentColour;
+    optionsData[1] = pPIPDATA->AltitudeOffset;
+    optionsData[2] = pPIPDATA->Volume;
+    optionsData[3] = pPIPDATA->TextSize;
+    optionsData[4] = flipped;
+    optionsData[5] = LightStatus;
+
+    pTFT->setCursor(20, 100);
+    pTFT->print(options[firstDisplayed]); pTFT->print(": "); pTFT->print(optionsData[firstDisplayed]); pTFT->print("  ");
+
+    pTFT->setCursor(20, 173);
+    pTFT->print(options[firstDisplayed + 1]); pTFT->print(": "); pTFT->print(optionsData[firstDisplayed + 1]); pTFT->print("  ");
+
+    pTFT->setCursor(20, 246);
+    pTFT->print(options[firstDisplayed + 2]); pTFT->print(": "); pTFT->print(optionsData[firstDisplayed + 2]); pTFT->print("  ");
+
+    timer = millis();
+
 }

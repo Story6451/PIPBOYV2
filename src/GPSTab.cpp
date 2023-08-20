@@ -182,6 +182,7 @@ void GPSTab::Loop()
 
 void GPSTab::TFTDrawOptions()
 {
+    pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
     pTFT->setTextSize(pPIPDATA->TextSize);
     pTFT->setCursor(20, 75);
     pTFT->print("World Map");

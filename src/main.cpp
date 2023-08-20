@@ -46,7 +46,7 @@ bool decrement = false;
 const uint32_t REFRESH_BTN_PIN = 19;//refreshing button
 const uint32_t LOCK_BTN_PIN = 18;//locking button
 
-//led pins (all unused)
+//led pins 
 const uint32_t LED_1_PIN = 6; 
 const uint32_t LED_2_PIN = 7;
 const uint32_t LED_3_PIN = 8;
@@ -58,9 +58,11 @@ bool locked = false;
 int32_t prevBtnState = LOW;
 int32_t oldIndex = 0;
 int32_t index = 0;
+
 int32_t prevPipColour;
 int8_t prevTextSize;
-int8_t prevFlipScreen;
+int8_t prevOrientation;
+int8_t prevLightStatus;
 
 Sd2Card card;
 SdVolume volume;
@@ -231,12 +233,12 @@ void GetSettings()
   {
     File file = SD.open("config.txt");
     
-    String datas[5];
+    String datas[6];
     if (file)
     {
       Serial.println("file available");
       int count = 0;
-      while ((file.available()) && (count < 5))
+      while ((file.available()) && (count < 6))
       {
         char stream = file.read();
         Serial.print(stream);        
@@ -256,7 +258,7 @@ void GetSettings()
     }
 
     Serial.println(" ");
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 6; i++)
     {
       Serial.print("data: "); Serial.println(datas[i].toInt());
     }
@@ -269,7 +271,8 @@ void GetSettings()
     pipData.AltitudeOffset = datas[1].toInt();
     pipData.Volume = datas[2].toInt();
     pipData.TextSize = datas[3].toInt();
-    pipData.FlipScreen = datas[4].toInt();
+    pipData.Orientation = datas[4].toInt();
+    pipData.LightStatus = datas[5].toInt();
   }
   else
   {
@@ -349,7 +352,7 @@ void setup()
   PeripheralSetup();
   GetSettings();
   DrawTabs();
-
+  tft.setRotation(pipData.Orientation);
   attachInterrupt(digitalPinToInterrupt(REFRESH_BTN_PIN), ISR_refresh_button, RISING);
   attachInterrupt(digitalPinToInterrupt(LOCK_BTN_PIN), ISR_lock_button, RISING);
   attachInterrupt(digitalPinToInterrupt(pipData.ENCODER_A_DT), ISR_encoder_a, CHANGE);
@@ -411,7 +414,7 @@ void loop()
     Tabs[index]->Loop();
   }
 
-  if ((pipData.ActiveColour != prevPipColour) || (pipData.TextSize != prevTextSize) || (pipData.FlipScreen != prevFlipScreen))
+  if ((pipData.ActiveColour != prevPipColour) || (pipData.TextSize != prevTextSize) || (pipData.Orientation != prevOrientation))
   {
     tft.fillRect(0, 0, 480, 320, BLACK);
     DrawTabs();
@@ -419,9 +422,26 @@ void loop()
     Tabs[index]->Setup();
   }
 
+  if (pipData.LightStatus != prevLightStatus)
+  {
+    if (pipData.LightStatus == 1)
+    {
+      digitalWrite(LED_1_PIN, HIGH);
+      digitalWrite(LED_2_PIN, HIGH);
+      digitalWrite(LED_3_PIN, HIGH);
+    }
+    else
+    {
+      digitalWrite(LED_1_PIN, LOW);
+      digitalWrite(LED_2_PIN, LOW);
+      digitalWrite(LED_3_PIN, LOW);
+    }
+  }
+
+  prevLightStatus = pipData.LightStatus;
   prevPipColour = pipData.ActiveColour;
   prevTextSize = pipData.TextSize;
-  prevFlipScreen = pipData.FlipScreen;
+  prevOrientation = pipData.Orientation;
   prevEncoderAValue = pipData.encoderAValue;
 }
 
