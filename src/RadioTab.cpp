@@ -2,51 +2,62 @@
 #include <Adafruit_TFTLCD.h>
 #include <SD.h>
 #include <Colours.h>
-#include <radio.h>
-#include <TEA5767.h>
+#include <TEA5767N.h>
 
-//#define FIX_BAND RADIO_BAND_FM
+TEA5767N radio = TEA5767N();
 
-TEA5767 radio;
 
 RadioTab::RadioTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
 {
+    prevEncoderAValue = 0;
     frequency = 0;
-
-    if (radio.init())
-    {
-        pTFT->println("Found radio");
-        Serial.println("Found radio");
-        radioFound = true;
-    }
-    else
-    {
-        pTFT->println("Could not find radio");
-        Serial.println("Could not find radio");
-        radioFound = false;
-    }
+    signalStrength = 0;
 }
 
 void RadioTab::Setup()
 {
-    if (radioFound)
-        radio.setMono(false);
+    radio.setMonoReception();
+    radio.setStereoNoiseCancellingOn();
     
 }
 
 void RadioTab::Loop()
 {
-    
-    //int val = analogRead(pPIPDATA->POT_2_PIN);
-    //frequency = map(val, 0, 1023, 8700, 10800);
-    byte vol = map(pPIPDATA->Volume, 0, 100, 0, 15);
+    if (pPIPDATA->Locked == true)
+    {
+        if (pPIPDATA->encoderAValue > prevEncoderAValue)
+        {
+            frequency += 0.1;
+        }
+        else if (pPIPDATA->encoderAValue < prevEncoderAValue)
+        {
+            frequency -= 0.1;
+        }
 
-    radio.setBandFrequency(RADIO_BAND_FM, frequency);
+        if (pPIPDATA->encoderBValue > prevEncoderBValue)
+        {
+            frequency += 1;
+        }
+        else if (pPIPDATA->encoderBValue < prevEncoderBValue)
+        {
+            frequency -= 1;
+        }
 
-    radio.setVolume(vol);
+        if (frequency > 109)
+        {
+            frequency = 109;
+        }
+        else if (frequency < 87)
+        {
+            frequency = 87;
+        }
 
+        prevEncoderAValue = pPIPDATA->encoderAValue;
+        prevEncoderBValue = pPIPDATA->encoderBValue;
+        signalStrength = radio.getSignalLevel();
+        radio.selectFrequency(frequency);
+    }
 
-    OutputThroughSerial(ModuleName());
     TFTOutput();
 }
 
@@ -59,7 +70,9 @@ void RadioTab::TFTOutput()
 {
     pTFT->setTextSize(pPIPDATA->TextSize);
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
-    pTFT->setCursor(0, 100);
-    //pTFT->print("Frequency: "); pTFT->print(frequency/100); pTFT->print(" Hz ");
-    pTFT->print(ModuleName());
+
+    pTFT->setCursor(10, 100);
+    pTFT->print("Frequency: "); pTFT->print(frequency); pTFT->print("MHz  ");
+    pTFT->setCursor(10, 130);
+    pTFT->print("Signal Strength: "); pTFT->print(signalStrength); pTFT->print("  ");
 }

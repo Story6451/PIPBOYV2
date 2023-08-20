@@ -6,9 +6,12 @@
 class RadioTab : public Tab //get fm radio reciever
 {
   private:
+	int16_t prevEncoderAValue;
+	int16_t prevEncoderBValue;
   	float frequency;
+	int8_t signalStrength;
 	bool selected;
-	bool radioFound = false;
+	
   public:
   	RadioTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData);
 	String ModuleName(){return "RADIO";}
