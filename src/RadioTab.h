@@ -8,6 +8,8 @@ class RadioTab : public Tab //get fm radio reciever
   private:
 	int16_t prevEncoderAValue;
 	int16_t prevEncoderBValue;
+	int8_t mode;
+	uint64_t timer;
   	float frequency;
 	int8_t signalStrength;
 	bool selected;
