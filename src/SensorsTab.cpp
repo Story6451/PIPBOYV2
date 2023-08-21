@@ -19,7 +19,7 @@ SensorsTab::SensorsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pP
     {
         pTFT->println("Could not find clock");
         Serial.println("Could not find clock");
-        abort();
+        //abort();
     }
     else
     {
@@ -28,6 +28,13 @@ SensorsTab::SensorsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pP
         Serial.println("Found Clock");
     }
     clock.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    barometer.begin();
+
+    barometer.setModeBarometer();
+
+    barometer.setOversampleRate(7);  
+
+    barometer.enableEventFlags(); 
 }
 
 void SensorsTab::Setup()
@@ -37,19 +44,6 @@ void SensorsTab::Setup()
     COConcentration = 0;
     date = "";
     time = "";
-    //if (clockFound)
-    //    clock.begin();
-
-    barometer.begin();
-
-    barometer.setModeBarometer();
-
-    barometer.setOversampleRate(7);  
-
-    barometer.enableEventFlags(); 
-
-    //mq7.calibrate();
-
 }
 
 void SensorsTab::Loop()

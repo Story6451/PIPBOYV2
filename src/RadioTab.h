@@ -11,6 +11,8 @@ class RadioTab : public Tab //get fm radio reciever
 	int8_t mode;
 	uint64_t timer;
   	float frequency;
+	
+	float channelFrequency;
 	int8_t signalStrength;
 	bool selected;
 	

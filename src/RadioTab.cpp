@@ -10,23 +10,27 @@ TEA5767N radio = TEA5767N();
 RadioTab::RadioTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
 {
     prevEncoderAValue = 0;
-    frequency = 76;
-    signalStrength = 0;
     timer = 0;
+    radio.setStandByOn();
+    radio.setMonoReception();
+    radio.setStereoNoiseCancellingOn();
     mode = 0;
 }
 
 void RadioTab::Setup()
 {
-    radio.setMonoReception();
-    radio.setStereoNoiseCancellingOn();
-    
+    signalStrength = 0;
+    frequency = 76;
+    channelFrequency = 76;
+    TFTOutput();
 }
 
 void RadioTab::Loop()
 {
+    
     if (pPIPDATA->Locked == true)
     {
+        radio.setStandByOff();
         if ((pPIPDATA->encoderBValue > prevEncoderBValue) || (pPIPDATA->encoderBValue < prevEncoderBValue))
         {
             if (mode == 1)
@@ -37,6 +41,7 @@ void RadioTab::Loop()
             {
                 mode = 1;
             }
+            TFTOutput();
         }
 
         if (mode == 0)
@@ -57,28 +62,36 @@ void RadioTab::Loop()
             {
                 frequency = 76;
             }
+            channelFrequency = frequency;
         }
         else
         {
-            if (timer > 50)
+            while ((signalStrength < 10) && (frequency < 108))
             {
-                frequency += 0.2;
+                signalStrength = radio.getSignalLevel();
+                frequency += 0.1;
                 if (frequency > 108)
                 {
-                    frequency = 76;
+                    frequency = 108;
+                }
+                if (signalStrength >= 10)
+                {
+                    channelFrequency = frequency;
                 }
             }
-            timer = millis();
         }
 
         prevEncoderAValue = pPIPDATA->encoderAValue;
         prevEncoderBValue = pPIPDATA->encoderBValue;
         signalStrength = radio.getSignalLevel();
-        radio.selectFrequency(frequency);
+        radio.selectFrequency(channelFrequency);
     }
-
-
+    else
+    {
+        radio.setStandByOn();
+    }
     TFTOutput();
+    
 }
 
 void RadioTab::OutputThroughSerial(String output)
