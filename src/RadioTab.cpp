@@ -78,7 +78,9 @@ void RadioTab::Loop()
                 {
                     channelFrequency = frequency;
                 }
+                delay(100);
             }
+
         }
 
         prevEncoderAValue = pPIPDATA->encoderAValue;
@@ -105,7 +107,7 @@ void RadioTab::TFTOutput()
     pTFT->setTextColor(pPIPDATA->ActiveColour, BLACK);
 
     pTFT->setCursor(10, 100);
-    pTFT->print("Frequency: "); pTFT->print(frequency); pTFT->print("MHz  ");
+    pTFT->print("Frequency: "); pTFT->print(channelFrequency); pTFT->print("MHz  ");
     pTFT->setCursor(10, 130);
     pTFT->print("Signal Strength: "); pTFT->print(signalStrength); pTFT->print("  ");
     pTFT->setCursor(10, 160);
