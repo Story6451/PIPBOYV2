@@ -15,6 +15,13 @@ MPL3115A2 barometer;
 
 SensorsTab::SensorsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pPipData)
 {
+    barometer.begin();
+
+    barometer.setModeBarometer();
+
+    barometer.setOversampleRate(7);  
+
+    barometer.enableEventFlags(); 
     if (!clock.begin()) 
     {
         pTFT->println("Could not find clock");
@@ -28,13 +35,6 @@ SensorsTab::SensorsTab(Adafruit_TFTLCD *ptft, ConfigData *pPipData):Tab(ptft, pP
         Serial.println("Found Clock");
     }
     clock.adjust(DateTime(F(__DATE__), F(__TIME__)));
-    barometer.begin();
-
-    barometer.setModeBarometer();
-
-    barometer.setOversampleRate(7);  
-
-    barometer.enableEventFlags(); 
 }
 
 void SensorsTab::Setup()
