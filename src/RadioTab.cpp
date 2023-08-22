@@ -66,8 +66,17 @@ void RadioTab::Loop()
         }
         else
         {
+            //dont works
+            bool flag = false;
             while ((signalStrength < 10) && (frequency < 108))
             {
+                if (flag == false)
+                {
+                    pTFT->setCursor(10, 100); pTFT->print("Frequency: SEARCHING   ");
+                    flag = true;
+                }
+            
+                radio.selectFrequency(frequency);
                 signalStrength = radio.getSignalLevel();
                 frequency += 0.1;
                 if (frequency > 108)
@@ -78,7 +87,7 @@ void RadioTab::Loop()
                 {
                     channelFrequency = frequency;
                 }
-                delay(100);
+                //delay(100);
             }
 
         }
